@@ -12,3 +12,5 @@
 4. Сортировка по дате просмотра, году выхода, рейтингу.
 5. Фильтр по жанру, стране, актёру, режиссёру или сценаристу.
 6. Возможность доступа нескольких человек, даты просмотра и рейтинги для каждого пользователя персональные.
+Диаграмма use-case: ![UseCase](https://github.com/Botinok666/JMovie/blob/master/images/UC_JM.png)
+ER-диаграмма для БД: ![DataBase](https://github.com/Botinok666/JMovie/blob/master/images/MovieDB.png)
