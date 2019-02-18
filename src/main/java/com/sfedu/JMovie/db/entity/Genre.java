@@ -18,6 +18,13 @@ public class Genre {
     @JoinTable(name = "movie-genre")
     private List<Movie> movies = new ArrayList<>();
 
+    public Genre(){}
+
+    public Genre(@NotNull Short id, @NotNull String name){
+        setId(id);
+        setName(name);
+    }
+
     public Short getId() {
         return id;
     }

@@ -22,6 +22,13 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Viewing> viewings = new ArrayList<>();
 
+    public User(){}
+
+    public User(@NotNull String name, @NotNull String pwd){
+        setName(name);
+        setPwd(pwd);
+    }
+
     public Short getId() {
         return id;
     }

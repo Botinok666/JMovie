@@ -18,6 +18,13 @@ public class Country {
     @JoinTable(name = "movie-country")
     private List<Movie> movies = new ArrayList<>();
 
+    public Country(){}
+
+    public Country(@NotNull Short id, @NotNull String name){
+        setId(id);
+        setName(name);
+    }
+
     public Short getId() {
         return id;
     }

@@ -24,6 +24,13 @@ public class Person {
     @JoinTable(name = "movie-actor")
     private List<Movie> moviesActor = new ArrayList<>();
 
+    public Person(){}
+
+    public Person(@NotNull Integer id, @NotNull String name){
+        setId(id);
+        setName(name);
+    }
+
     public Integer getId() {
         return id;
     }

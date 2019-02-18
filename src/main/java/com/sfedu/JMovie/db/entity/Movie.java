@@ -22,25 +22,23 @@ public class Movie {
     @NotNull
     private short year;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "movie-country")
     private List<Country> countries = new ArrayList<>();
 
     @ManyToOne
-    @Column(nullable = false)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "director_id")
     @NotNull
     private Person director;
 
     @ManyToOne
-    @Column(nullable = false)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "screenwriter_id")
     @NotNull
     private Person screenwriter;
 
     private String tagLine;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "movie-genre")
     private List<Genre> genres = new ArrayList<>();
 
@@ -60,8 +58,10 @@ public class Movie {
 
     private float ratingIMDB;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "movie")
+    @OneToMany(mappedBy = "movie")
     private List<Viewing> viewings = new ArrayList<>();
+
+    public Movie(){}
 
     public Integer getId() {
         return id;
