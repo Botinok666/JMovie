@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JM.iml" filepath="$PROJECT_DIR$/JM.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JMovie.iml" filepath="$PROJECT_DIR$/.idea/modules/JMovie.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JMovie_main.iml" filepath="$PROJECT_DIR$/.idea/modules/JMovie_main.iml" group="JMovie" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JMovie_test.iml" filepath="$PROJECT_DIR$/.idea/modules/JMovie_test.iml" group="JMovie" />

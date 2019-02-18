@@ -14,8 +14,12 @@ public class Movie {
     @NotNull
     private String localizedTitle;
 
+    @Column(nullable = false)
+    @NotNull
     private String originalTitle;
 
+    @Column(nullable = false)
+    @NotNull
     private String posterLink;
 
     @Column(nullable = false)
@@ -36,6 +40,8 @@ public class Movie {
     @NotNull
     private Person screenwriter;
 
+    @Column(nullable = false)
+    @NotNull
     private String tagLine;
 
     @ManyToMany
@@ -50,18 +56,38 @@ public class Movie {
     @JoinTable(name = "movie-actor")
     private List<Person> actors = new ArrayList<>();
 
+    @Column(nullable = false)
+    @NotNull
+    @Lob
     private String storyline;
 
     @Column(nullable = false)
     @NotNull
     private float ratingKP;
 
-    private float ratingIMDB;
+    @Column(nullable = false)
+    @NotNull
+    private Float ratingIMDB;
 
     @OneToMany(mappedBy = "movie")
     private List<Viewing> viewings = new ArrayList<>();
 
     public Movie(){}
+
+    public Movie(@NotNull Integer id, @NotNull String localizedTitle, @NotNull String originalTitle,
+                 @NotNull String posterLink, @NotNull short year, @NotNull String tagLine, @NotNull short runtime,
+                 @NotNull String storyline, @NotNull float ratingKP, @NotNull Float ratingIMDB){
+        setId(id);
+        setLocalizedTitle(localizedTitle);
+        setOriginalTitle(originalTitle);
+        setPosterLink(posterLink);
+        setYear(year);
+        setTagLine(tagLine);
+        setRuntime(runtime);
+        setStoryline(storyline);
+        setRatingKP(ratingKP);
+        setRatingIMDB(ratingIMDB);
+    }
 
     public Integer getId() {
         return id;
@@ -175,11 +201,11 @@ public class Movie {
         this.ratingKP = ratingKP;
     }
 
-    public float getRatingIMDB() {
+    public Float getRatingIMDB() {
         return ratingIMDB;
     }
 
-    public void setRatingIMDB(float ratingIMDB) {
+    public void setRatingIMDB(Float ratingIMDB) {
         this.ratingIMDB = ratingIMDB;
     }
 

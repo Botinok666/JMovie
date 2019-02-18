@@ -30,6 +30,11 @@ public class Viewing {
 
     public Viewing(){}
 
+    public Viewing(@NotNull LocalDate date, @NotNull float ratingUser){
+        setDate(date);
+        setRatingUser(ratingUser);
+    }
+
     public Integer getId() {
         return id;
     }
