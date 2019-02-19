@@ -11,7 +11,7 @@ public class Viewing {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "movie_id")
+    @JoinColumn(name = "movie_id", nullable = false)
     @NotNull
     private Movie movie;
 
@@ -20,7 +20,7 @@ public class Viewing {
     private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @NotNull
     private User user;
 

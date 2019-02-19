@@ -27,16 +27,18 @@ public class Movie {
     private short year;
 
     @ManyToMany
-    @JoinTable(name = "movie-country")
+    @JoinTable(name = "movie_country",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "country_id"))
     private List<Country> countries = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "director_id")
+    @JoinColumn(name = "director_id", nullable = false)
     @NotNull
     private Person director;
 
     @ManyToOne
-    @JoinColumn(name = "screenwriter_id")
+    @JoinColumn(name = "screenwriter_id", nullable = false)
     @NotNull
     private Person screenwriter;
 
@@ -45,7 +47,9 @@ public class Movie {
     private String tagLine;
 
     @ManyToMany
-    @JoinTable(name = "movie-genre")
+    @JoinTable(name = "movie_genre",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genre> genres = new ArrayList<>();
 
     @Column(nullable = false)
@@ -53,7 +57,9 @@ public class Movie {
     private short runtime;
 
     @ManyToMany
-    @JoinTable(name = "movie-actor")
+    @JoinTable(name = "movie_actor",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "actor_id"))
     private List<Person> actors = new ArrayList<>();
 
     @Column(nullable = false)

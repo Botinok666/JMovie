@@ -3,6 +3,7 @@ package com.sfedu.JMovie.db.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+
 import java.util.List;
 
 @Entity
@@ -21,7 +22,9 @@ public class Person {
     private List<Movie> moviesScreenwriter = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(name = "movie-actor")
+    @JoinTable(name = "movie_actor",
+            joinColumns = @JoinColumn(name = "actor_id"),
+            inverseJoinColumns = @JoinColumn(name = "movie_id"))
     private List<Movie> moviesActor = new ArrayList<>();
 
     public Person(){}
