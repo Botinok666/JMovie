@@ -19,18 +19,37 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class DBTest {
-    @Autowired
-    private CountryRepository coutryRepository;
-    @Autowired
+    private CountryRepository countryRepository;
     private GenreRepository genreRepository;
-    @Autowired
     private PersonRepository personRepository;
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private ViewingRepository viewingRepository;
-    @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    public void setCountryRepository(CountryRepository countryRepository){
+        this.countryRepository = countryRepository;
+    }
+    @Autowired
+    public void setGenreRepository(GenreRepository genreRepository){
+        this.genreRepository = genreRepository;
+    }
+    @Autowired
+    public void setPersonRepository(PersonRepository personRepository){
+        this.personRepository = personRepository;
+    }
+    @Autowired
+    public void setUserRepository(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+    @Autowired
+    public void setViewingRepository(ViewingRepository viewingRepository){
+        this.viewingRepository = viewingRepository;
+    }
+    @Autowired
+    public void setMovieRepository(MovieRepository movieRepository){
+        this.movieRepository = movieRepository;
+    }
 
     //Сохранение одного жанра
     @Test
@@ -56,11 +75,11 @@ public class DBTest {
         final String name = "test";
         final Country country = new Country(id, name);
         //Сохраняем и получаем сохранённый объект
-        final Country saved = coutryRepository.save(country);
+        final Country saved = countryRepository.save(country);
         assertEquals(saved.getId(), id);
         assertEquals(saved.getName(), name);
         //Получаем его же по ID из репозитория
-        Optional<Country> selectedOpt = coutryRepository.findById(saved.getId());
+        Optional<Country> selectedOpt = countryRepository.findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
         final Country selected = selectedOpt.get();
         assertEquals(selected.getId(), saved.getId());
@@ -236,7 +255,7 @@ public class DBTest {
                 new Genre((short)2, "drama"),
                 new Genre((short)9, "thriller")
         ));
-        final List<Country> countries = coutryRepository.saveAll(Collections.singletonList(
+        final List<Country> countries = countryRepository.saveAll(Collections.singletonList(
                 new Country((short) 3, "Croatia")
         ));
         //Заполняем поля и списки первого фильма
@@ -250,7 +269,7 @@ public class DBTest {
         //Проверяем связанные таблицы
         assertEquals(personRepository.findAll().size(), 4);
         assertEquals(genreRepository.findAll().size(), 3);
-        assertEquals(coutryRepository.findAll().size(), 1);
+        assertEquals(countryRepository.findAll().size(), 1);
         //Проверяем режиссёра
         assertNotNull(updatedMovie.getDirector());
         assertEquals(updatedMovie.getDirector().getId(), director.getId());
@@ -298,7 +317,7 @@ public class DBTest {
                 new Genre((short)2, "drama"),
                 new Genre((short)9, "thriller")
         ));
-        final List<Country> countries1 = coutryRepository.saveAll(Collections.singletonList(
+        final List<Country> countries1 = countryRepository.saveAll(Collections.singletonList(
                 new Country((short) 3, "Croatia")
         ));
         //Заполняем поля и списки первого фильма
@@ -330,7 +349,7 @@ public class DBTest {
                 new Genre(genres1.get(2).getId(), genres1.get(2).getName())
         ));
         //Страна будет одна новая, одна из первого фильма
-        final List<Country> countries2 = coutryRepository.saveAll(Arrays.asList(
+        final List<Country> countries2 = countryRepository.saveAll(Arrays.asList(
                 new Country((short)4, "Hungary"),
                 new Country(countries1.get(0).getId(), countries1.get(0).getName())
         ));
@@ -346,7 +365,7 @@ public class DBTest {
         //Проверяем связанные таблицы
         assertEquals(personRepository.findAll().size(), 6);
         assertEquals(genreRepository.findAll().size(), 3);
-        assertEquals(coutryRepository.findAll().size(), 2);
+        assertEquals(countryRepository.findAll().size(), 2);
 
         //Проверяем режиссёра
         assertEquals(director2.getMoviesDirector().size(), 1);
@@ -401,7 +420,7 @@ public class DBTest {
         final Person screenwriter1 = personRepository.save(new Person(6, "p1"));
         final Person actor1 = personRepository.save(new Person(10, "p2"));
         final Genre genre1 = genreRepository.save(new Genre((short)11, "horror"));
-        final Country country1 = coutryRepository.save(new Country((short)3, "Croatia"));
+        final Country country1 = countryRepository.save(new Country((short)3, "Croatia"));
         //Заполняем поля и списки первого фильма
         movie1.setDirector(director1);
         movie1.setScreenwriter(screenwriter1);
@@ -420,7 +439,7 @@ public class DBTest {
         final Person screenwriter2 = personRepository.save(new Person(6, "p1"));
         final Person actor2 = personRepository.save(new Person(10, "p2"));
         final Genre genre2 = genreRepository.save(new Genre((short)11, "horror"));
-        final Country country2 = coutryRepository.save(new Country((short)3, "Croatia"));
+        final Country country2 = countryRepository.save(new Country((short)3, "Croatia"));
         //Заполняем поля и списки второго фильма
         movie2.setDirector(director2);
         movie2.setScreenwriter(screenwriter2);
@@ -433,7 +452,7 @@ public class DBTest {
         //Проверим количество записей
         assertEquals(personRepository.findAll().size(), 3);
         assertEquals(genreRepository.findAll().size(), 1);
-        assertEquals(coutryRepository.findAll().size(), 1);
+        assertEquals(countryRepository.findAll().size(), 1);
 
         //Создадим двух пользователей
         final User user1 = userRepository.save(new User("name", "p@ssw0rd"));
