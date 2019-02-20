@@ -14,9 +14,6 @@ public class Country {
     @NotNull
     private String name;
 
-    @ManyToMany(mappedBy = "countries")
-    private List<Movie> movies = new ArrayList<>();
-
     public Country(){}
 
     public Country(@NotNull Short id, @NotNull String name){
@@ -40,11 +37,4 @@ public class Country {
         this.name = name;
     }
 
-    public List<Movie> getMovies() {
-        return movies;
-    }
-
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
-    }
 }

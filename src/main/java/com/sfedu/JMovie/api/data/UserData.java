@@ -1,16 +1,16 @@
-package com.sfedu.JMovie.domain.model;
+package com.sfedu.JMovie.api.data;
 
 import com.sfedu.JMovie.db.RoleType;
 
-public class UserDomain {
+public class UserData {
     private Short id;
     private String name;
     private String pwd;
     private RoleType role;
-    public UserDomain(Short id, String name, String pwd, RoleType role){
-        this.id = id;
-        this.name = name;
-        this.pwd = pwd;
+    public UserData(Short id, String name, String pwd, RoleType role){
+        this.setId(id);
+        this.setName(name);
+        this.setPwd(pwd);
         setRole(role);
     }
 
@@ -24,6 +24,18 @@ public class UserDomain {
 
     public String getPwd() {
         return pwd;
+    }
+
+    public void setId(Short id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
     }
 
     public RoleType getRole() {

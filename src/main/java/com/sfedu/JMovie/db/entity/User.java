@@ -1,9 +1,9 @@
 package com.sfedu.JMovie.db.entity;
 
+import com.sfedu.JMovie.db.RoleType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class User {
@@ -19,14 +19,17 @@ public class User {
     @NotNull
     private String pwd;
 
-    @OneToMany(mappedBy = "user")
-    private List<Viewing> viewings = new ArrayList<>();
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
+    private RoleType role;
 
     public User(){}
 
-    public User(@NotNull String name, @NotNull String pwd){
+    public User(@NotNull String name, @NotNull String pwd, @NotNull RoleType role){
         setName(name);
         setPwd(pwd);
+        setRole(role);
     }
 
     public Short getId() {
@@ -53,11 +56,11 @@ public class User {
         this.pwd = pwd;
     }
 
-    public List<Viewing> getViewings() {
-        return viewings;
+    public RoleType getRole() {
+        return role;
     }
 
-    public void setViewings(List<Viewing> viewings) {
-        this.viewings = viewings;
+    public void setRole(RoleType role) {
+        this.role = role;
     }
 }

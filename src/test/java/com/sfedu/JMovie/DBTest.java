@@ -1,5 +1,6 @@
 package com.sfedu.JMovie;
 
+import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
 import org.junit.Test;
@@ -9,10 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -59,14 +57,14 @@ public class DBTest {
         final Genre genre = new Genre(id, name);
         //Сохраняем и получаем сохранённый объект
         final Genre saved = genreRepository.save(genre);
-        assertEquals(saved.getId(), id);
-        assertEquals(saved.getName(), name);
+        assertEquals(id, saved.getId());
+        assertEquals(name, saved.getName());
         //Получаем его же по ID из репозитория
         Optional<Genre> selectedOpt = genreRepository.findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
         final Genre selected = selectedOpt.get();
-        assertEquals(selected.getId(), saved.getId());
-        assertEquals(selected.getName(), name);
+        assertEquals(id, selected.getId());
+        assertEquals(name, selected.getName());
     }
     //Сохранение одной страны
     @Test
@@ -76,14 +74,14 @@ public class DBTest {
         final Country country = new Country(id, name);
         //Сохраняем и получаем сохранённый объект
         final Country saved = countryRepository.save(country);
-        assertEquals(saved.getId(), id);
-        assertEquals(saved.getName(), name);
+        assertEquals(id, saved.getId());
+        assertEquals(name, saved.getName());
         //Получаем его же по ID из репозитория
         Optional<Country> selectedOpt = countryRepository.findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
         final Country selected = selectedOpt.get();
-        assertEquals(selected.getId(), saved.getId());
-        assertEquals(selected.getName(), name);
+        assertEquals(id, selected.getId());
+        assertEquals(name, selected.getName());
     }
     //Сохранение одной персоны
     @Test
@@ -93,34 +91,34 @@ public class DBTest {
         final Person person = new Person(id, name);
         //Сохраняем и получаем сохранённый объект
         final Person saved = personRepository.save(person);
-        assertEquals(saved.getId(), id);
-        assertEquals(saved.getName(), name);
+        assertEquals(id, saved.getId());
+        assertEquals(name, saved.getName());
         //Получаем его же по ID из репозитория
         Optional<Person> selectedOpt = personRepository.findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
         final Person selected = selectedOpt.get();
-        assertEquals(selected.getId(), saved.getId());
-        assertEquals(selected.getName(), name);
+        assertEquals(id, selected.getId());
+        assertEquals(name, selected.getName());
     }
     //Сохранение одного пользователя, затем обновление его данных
     @Test
     public void testSaveUpdateUser(){
         final String name = "user";
         final String pwd = "p@ssw0rd";
-        final User user = new User(name, pwd);
+        final User user = new User(name, pwd, RoleType.ROLE_ADMIN);
         //Сохраняем и получаем сохранённый объект
         final User saved = userRepository.save(user);
         assertNotNull(saved.getId());
-        assertEquals(saved.getName(), name);
-        assertEquals(saved.getPwd(), pwd);
+        assertEquals(name, saved.getName());
+        assertEquals(pwd, saved.getPwd());
         //Получаем его же из репозитория по сгенерированному ID
         Optional<User> selectedOpt = userRepository.findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
         final User selected = selectedOpt.get();
         assertNotNull(selected.getId());
-        assertEquals(selected.getId(), saved.getId());
-        assertEquals(selected.getName(), saved.getName());
-        assertEquals(selected.getPwd(), saved.getPwd());
+        assertEquals(saved.getId(), selected.getId());
+        assertEquals(saved.getName(), selected.getName());
+        assertEquals(saved.getPwd(), selected.getPwd());
         //Меняем пароль
         selected.setPwd("password");
         //Сохраняем и получаем обновлённый объект
@@ -138,15 +136,15 @@ public class DBTest {
         //Сохраняем и получаем сохранённый объект
         final Viewing saved = viewingRepository.save(viewing);
         assertNotNull(saved.getId());
-        assertEquals(saved.getDate(), localDate);
-        assertEquals(saved.getRatingUser(), rating, 0.0);
+        assertEquals(localDate, saved.getDate());
+        assertEquals(rating, saved.getRatingUser(), 0.0);
         //Получаем его же из репозитория по сгенерированному ID
         Optional<Viewing> selectedOpt = viewingRepository.findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
         final Viewing selected = selectedOpt.get();
         assertNotNull(selected.getId());
-        assertEquals(selected.getDate(), saved.getDate());
-        assertEquals(selected.getRatingUser(), saved.getRatingUser(), 0.0);
+        assertEquals(saved.getDate(), selected.getDate());
+        assertEquals(saved.getRatingUser(), selected.getRatingUser(), .0);
     }
     //Сохранение одного фильма, затем обновление его данных
     @Test
@@ -179,36 +177,36 @@ public class DBTest {
                 runtime, story, ratingK, ratingI);
         //Сохраняем и получаем сохранённый объект
         final Movie saved = movieRepository.save(movie);
-        assertEquals(saved.getId(), id);
-        assertEquals(saved.getLocalizedTitle(), localized);
-        assertEquals(saved.getOriginalTitle(), original);
-        assertEquals(saved.getPosterLink(), poster);
-        assertEquals(saved.getYear(), year);
+        assertEquals(id, saved.getId());
+        assertEquals(localized, saved.getLocalizedTitle());
+        assertEquals(original, saved.getOriginalTitle());
+        assertEquals(poster, saved.getPosterLink());
+        assertEquals(year, saved.getYear());
         assertNotNull(saved.getCountries());
-        assertEquals(saved.getTagLine(), tagLine);
+        assertEquals(tagLine, saved.getTagLine());
         assertNotNull(saved.getGenres());
-        assertEquals(saved.getRuntime(), runtime);
+        assertEquals(runtime, saved.getRuntime());
         assertNotNull(saved.getActors());
-        assertEquals(saved.getStoryline(), story);
-        assertEquals(saved.getRatingKP(), ratingK, .0);
-        assertEquals(saved.getRatingIMDB(), ratingI, .0);
+        assertEquals(story, saved.getStoryline());
+        assertEquals(ratingK, saved.getRatingKP(), .0);
+        assertEquals(ratingI, saved.getRatingIMDB(), .0);
         //Получаем его же из репозитория по ID
         Optional<Movie> selectedOpt = movieRepository.findById(id);
         assertTrue(selectedOpt.isPresent());
         final Movie selected = selectedOpt.get();
-        assertEquals(selected.getId(), saved.getId());
-        assertEquals(selected.getLocalizedTitle(), saved.getLocalizedTitle());
-        assertEquals(selected.getOriginalTitle(), saved.getOriginalTitle());
-        assertEquals(selected.getPosterLink(), saved.getPosterLink());
-        assertEquals(selected.getYear(), saved.getYear());
+        assertEquals(saved.getId(), selected.getId());
+        assertEquals(saved.getLocalizedTitle(), selected.getLocalizedTitle());
+        assertEquals(saved.getOriginalTitle(), selected.getOriginalTitle());
+        assertEquals(saved.getPosterLink(), selected.getPosterLink());
+        assertEquals(saved.getYear(), selected.getYear());
         assertNotNull(selected.getCountries());
-        assertEquals(selected.getTagLine(), saved.getTagLine());
+        assertEquals(saved.getTagLine(), selected.getTagLine());
         assertNotNull(selected.getGenres());
-        assertEquals(selected.getRuntime(), saved.getRuntime());
+        assertEquals(saved.getRuntime(), selected.getRuntime());
         assertNotNull(selected.getActors());
-        assertEquals(selected.getStoryline(), saved.getStoryline());
-        assertEquals(selected.getRatingKP(), saved.getRatingKP(), .0);
-        assertEquals(selected.getRatingIMDB(), saved.getRatingIMDB(), .0);
+        assertEquals(saved.getStoryline(), selected.getStoryline());
+        assertEquals(saved.getRatingKP(), selected.getRatingKP(), .0);
+        assertEquals(saved.getRatingIMDB(), selected.getRatingIMDB(), .0);
         //Обновляем поля
         selected.setOriginalTitle("xXx");
         selected.setLocalizedTitle("хХх");
@@ -267,35 +265,26 @@ public class DBTest {
         //Сохраняем обновлённый фильм и получаем его объект
         final Movie updatedMovie = movieRepository.save(movie);
         //Проверяем связанные таблицы
-        assertEquals(personRepository.findAll().size(), 4);
-        assertEquals(genreRepository.findAll().size(), 3);
-        assertEquals(countryRepository.findAll().size(), 1);
+        assertEquals(4, personRepository.findAll().size());
+        assertEquals(3, genreRepository.findAll().size());
+        assertEquals(1, countryRepository.findAll().size());
         //Проверяем режиссёра
         assertNotNull(updatedMovie.getDirector());
-        assertEquals(updatedMovie.getDirector().getId(), director.getId());
-        assertEquals(director.getMoviesDirector().size(), 1);
+        assertEquals(director.getId(), updatedMovie.getDirector().getId());
         //Проверяем сценариста
         assertNotNull(updatedMovie.getScreenwriter());
-        assertEquals(updatedMovie.getScreenwriter().getId(), screenwriter.getId());
-        assertEquals(screenwriter.getMoviesScreenwriter().size(), 1);
+        assertEquals(screenwriter.getId(), updatedMovie.getScreenwriter().getId());
         //Проверяем актёров
-        assertEquals(updatedMovie.getActors().size(), 2);
-        assertEquals(updatedMovie.getActors().get(0).getId(), actors.get(0).getId());
-        assertEquals(actors.get(0).getMoviesActor().size(), 1);
-        assertEquals(updatedMovie.getActors().get(1).getId(), actors.get(1).getId());
-        assertEquals(actors.get(1).getMoviesActor().size(), 1);
+        assertEquals(2, updatedMovie.getActors().size());
+        assertEquals(actors.get(0).getId(), updatedMovie.getActors().get(0).getId());
         //Проверяем жанры
-        assertEquals(updatedMovie.getGenres().size(), 3);
-        assertEquals(updatedMovie.getGenres().get(0).getId(), genres.get(0).getId());
-        assertEquals(genres.get(0).getMovies().size(), 1);
-        assertEquals(updatedMovie.getGenres().get(1).getId(), genres.get(1).getId());
-        assertEquals(genres.get(1).getMovies().size(), 1);
-        assertEquals(updatedMovie.getGenres().get(2).getId(), genres.get(2).getId());
-        assertEquals(genres.get(2).getMovies().size(), 1);
+        assertEquals(3, updatedMovie.getGenres().size());
+        assertEquals(genres.get(0).getId(), updatedMovie.getGenres().get(0).getId());
+        assertEquals(genres.get(1).getId(), updatedMovie.getGenres().get(1).getId());
+        assertEquals(genres.get(2).getId(), updatedMovie.getGenres().get(2).getId());
         //Проверяем страны
-        assertEquals(updatedMovie.getCountries().size(), 1);
-        assertEquals(updatedMovie.getCountries().get(0).getName(), countries.get(0).getName());
-        assertEquals(countries.get(0).getMovies().size(), 1);
+        assertEquals(1, updatedMovie.getCountries().size());
+        assertEquals(countries.get(0).getName(), updatedMovie.getCountries().get(0).getName());
     }
     //Сохранение 2 фильмов, для каждого фильма по списку жанров, стран и актёров
     //Списки жанров, стран и актёров содержат повторения
@@ -318,7 +307,7 @@ public class DBTest {
                 new Genre((short)9, "thriller")
         ));
         final List<Country> countries1 = countryRepository.saveAll(Collections.singletonList(
-                new Country((short) 3, "Croatia")
+                new Country((short)3, "Croatia")
         ));
         //Заполняем поля и списки первого фильма
         movie1.setDirector(director1);
@@ -336,22 +325,21 @@ public class DBTest {
         //Режиссёр "новый"
         final Person director2 = personRepository.save(new Person(15, "p4"));
         //Сценаристом будет актёр-0 из первого фильма
-        final Person screenwriter2 = personRepository.save(new Person(
-                actors1.get(0).getId(), actors1.get(0).getName()));
+        final Person screenwriter2 = personRepository.save(new Person(3, "p2"));
         //Один актёр будет новый, два других будут из первого фильма
         final List<Person> actors2 = personRepository.saveAll(Arrays.asList(
-                new Person(actors1.get(1).getId(), actors1.get(1).getName()),
-                new Person(actors1.get(0).getId(), actors1.get(0).getName()),
+                new Person(24, "p3"),
+                new Person(3, "p2"),
                 new Person(16, "p5")
         ));
         //Жанр будет один, взятый из первого фильма
         final List<Genre> genres2 = genreRepository.saveAll(Collections.singletonList(
-                new Genre(genres1.get(2).getId(), genres1.get(2).getName())
+                new Genre((short)9, "thriller")
         ));
         //Страна будет одна новая, одна из первого фильма
         final List<Country> countries2 = countryRepository.saveAll(Arrays.asList(
                 new Country((short)4, "Hungary"),
-                new Country(countries1.get(0).getId(), countries1.get(0).getName())
+                new Country((short)3, "Croatia")
         ));
         //Заполняем поля и списки второго фильма
         movie2.setDirector(director2);
@@ -363,50 +351,81 @@ public class DBTest {
         final Movie updatedMovie2 = movieRepository.save(movie2);
 
         //Проверяем связанные таблицы
-        assertEquals(personRepository.findAll().size(), 6);
-        assertEquals(genreRepository.findAll().size(), 3);
-        assertEquals(countryRepository.findAll().size(), 2);
+        assertEquals(6, personRepository.findAll().size());
+        assertEquals(3, genreRepository.findAll().size());
+        assertEquals(2, countryRepository.findAll().size());
 
         //Проверяем режиссёра
-        assertEquals(director2.getMoviesDirector().size(), 1);
-        assertEquals(director2.getMoviesActor().size(), 0);
-        assertEquals(director2.getMoviesScreenwriter().size(), 0);
+        assertEquals(1, movieRepository
+                .findByDirectorId(director2.getId()).size());
+        assertEquals(0, movieRepository
+                .findByScreenwriterId(director2.getId()).size());
+        assertEquals(0, movieRepository
+                .findByActorsId(director2.getId()).size());
 
         //Проверяем сценариста, он же актёр из первого и второго фильмов
-        assertEquals(screenwriter2.getMoviesDirector().size(), 0);
-        assertEquals(screenwriter2.getMoviesActor().size(), 2);
-        assertEquals(screenwriter2.getMoviesScreenwriter().size(), 1);
+        assertEquals(0, movieRepository
+                .findByDirectorId(screenwriter2.getId()).size());
+        assertEquals(1, movieRepository
+                .findByScreenwriterId(screenwriter2.getId()).size());
+        assertEquals(2, movieRepository
+                .findByActorsId(screenwriter2.getId()).size());
 
-        //Проверяем актёров
-        assertEquals(updatedMovie2.getActors().size(), 3);
+        //Проверяем актёров из первого и второго фильмов
+        assertEquals(2, movieRepository
+                .findById(movie1.getId())
+                .orElseThrow(NoSuchElementException::new)
+                .getActors().size());
+        assertEquals(3, updatedMovie2.getActors().size());
         //Актёр-0 снимался в 2 фильмах
-        assertEquals(actors2.get(0).getMoviesActor().size(), 2);
-        assertEquals(actors2.get(0).getMoviesDirector().size(), 0);
-        assertEquals(actors2.get(0).getMoviesScreenwriter().size(), 0);
+        assertEquals(0, movieRepository
+                .findByDirectorId(actors2.get(0).getId()).size());
+        assertEquals(0, movieRepository
+                .findByScreenwriterId(actors2.get(0).getId()).size());
+        assertEquals(2, movieRepository
+                .findByActorsId(actors2.get(0).getId()).size());
         //Актёр-1 снимался в 2 фильмах и был режиссёром
-        assertEquals(actors2.get(0).getMoviesActor().size(), 2);
-        assertEquals(actors2.get(0).getMoviesDirector().size(), 0);
-        assertEquals(actors2.get(0).getMoviesScreenwriter().size(), 1);
+        assertEquals(0, movieRepository
+                .findByDirectorId(actors2.get(1).getId()).size());
+        assertEquals(1, movieRepository
+                .findByScreenwriterId(actors2.get(1).getId()).size());
+        assertEquals(2, movieRepository
+                .findByActorsId(actors2.get(1).getId()).size());
         //Актёр-2 снимался в 1 фильме
-        assertEquals(actors2.get(0).getMoviesActor().size(), 1);
-        assertEquals(actors2.get(0).getMoviesDirector().size(), 0);
-        assertEquals(actors2.get(0).getMoviesScreenwriter().size(), 0);
+        assertEquals(0, movieRepository
+                .findByDirectorId(actors2.get(2).getId()).size());
+        assertEquals(0, movieRepository
+                .findByScreenwriterId(actors2.get(2).getId()).size());
+        assertEquals(1, movieRepository
+                .findByActorsId(actors2.get(2).getId()).size());
 
         //Проверяем жанры
-        assertEquals(updatedMovie2.getGenres().size(), 1);
+        assertEquals(3, movieRepository
+                .findById(movie1.getId())
+                .orElseThrow(NoSuchElementException::new)
+                .getGenres().size());
+        assertEquals(1, updatedMovie2.getGenres().size());
         //Жанр из второго фильма был и в первом
-        assertEquals(genres2.get(0).getMovies().size(), 2);
+        assertEquals(2, movieRepository
+                .findByGenresId(genres2.get(0).getId()).size());
         //Два жанра из первого были только в нём
-        assertEquals(genres1.get(0).getMovies().size(), 1);
-        assertEquals(genres1.get(1).getMovies().size(), 1);
-        assertEquals(genres1.get(2).getMovies().size(), 2);
+        assertEquals(1, movieRepository
+                .findByGenresId(genres1.get(0).getId()).size());
+        assertEquals(1, movieRepository
+                .findByGenresId(genres1.get(1).getId()).size());
 
         //Проверяем страны
-        assertEquals(updatedMovie2.getCountries().size(), 2);
+        assertEquals(1, movieRepository
+                .findById(movie1.getId())
+                .orElseThrow(NoSuchElementException::new)
+                .getCountries().size());
+        assertEquals(2, updatedMovie2.getCountries().size());
         //Первая страна появилась только во втором фильме
-        assertEquals(countries2.get(0).getMovies().size(), 1);
+        assertEquals(1, movieRepository
+                .findByCountriesId(countries2.get(0).getId()).size());
         //Вторая фигурировала в двух фильмах
-        assertEquals(countries2.get(1).getMovies().size(), 2);
+        assertEquals(2, movieRepository
+                .findByCountriesId(countries2.get(1).getId()).size());
     }
     //Сохранение 4 просмотров, задействовано 2 фильма и 2 пользователя
     @Test
@@ -450,13 +469,15 @@ public class DBTest {
         movieRepository.save(movie2);
 
         //Проверим количество записей
-        assertEquals(personRepository.findAll().size(), 3);
-        assertEquals(genreRepository.findAll().size(), 1);
-        assertEquals(countryRepository.findAll().size(), 1);
+        assertEquals(3, personRepository.findAll().size());
+        assertEquals(1, genreRepository.findAll().size());
+        assertEquals(1, countryRepository.findAll().size());
 
         //Создадим двух пользователей
-        final User user1 = userRepository.save(new User("name", "p@ssw0rd"));
-        final User user2 = userRepository.save(new User("user", "password"));
+        final User user1 = userRepository.save(new User(
+                "name", "p@ssw0rd", RoleType.ROLE_ADMIN));
+        final User user2 = userRepository.save(new User(
+                "user", "password", RoleType.ROLE_USER));
 
         //Создадим 4 просмотра
         final Viewing viewing1 = new Viewing(LocalDate.now().minusDays(1), 0.4f);
@@ -481,12 +502,16 @@ public class DBTest {
         viewingRepository.save(viewing4);
 
         //Проверим просмотры
-        assertEquals(viewingRepository.findAll().size(), 4);
+        assertEquals(4, viewingRepository.findAll().size());
         //Просмотры фильмов
-        assertEquals(movie1.getViewings().size(), 3);
-        assertEquals(movie2.getViewings().size(), 1);
+        assertEquals(3, viewingRepository
+                .findByMovieId(movie1.getId()).size());
+        assertEquals(1, viewingRepository
+                .findByMovieId(movie2.getId()).size());
         //Просмотры пользователей
-        assertEquals(user1.getViewings().size(), 3);
-        assertEquals(user2.getViewings().size(), 1);
+        assertEquals(3, viewingRepository
+                .findByUserId(user1.getId()).size());
+        assertEquals(1, viewingRepository
+                .findByUserId(user2.getId()).size());
     }
 }
