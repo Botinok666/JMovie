@@ -14,10 +14,7 @@ public class Country {
     @NotNull
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "movie_country",
-            joinColumns = @JoinColumn(name = "country_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    @ManyToMany(mappedBy = "countries")
     private List<Movie> movies = new ArrayList<>();
 
     public Country(){}

@@ -21,10 +21,7 @@ public class Person {
     @OneToMany(mappedBy = "screenwriter")
     private List<Movie> moviesScreenwriter = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "movie_actor",
-            joinColumns = @JoinColumn(name = "actor_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    @ManyToMany(mappedBy = "actors")
     private List<Movie> moviesActor = new ArrayList<>();
 
     public Person(){}

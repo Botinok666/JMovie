@@ -14,10 +14,7 @@ public class Genre {
     @NotNull
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "movie_genre",
-            joinColumns = @JoinColumn(name = "genre_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    @ManyToMany(mappedBy = "genres")
     private List<Movie> movies = new ArrayList<>();
 
     public Genre(){}

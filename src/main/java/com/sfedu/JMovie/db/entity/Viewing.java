@@ -11,7 +11,7 @@ public class Viewing {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "movie_id", nullable = false)
+    @JoinColumn(nullable = false)
     @NotNull
     private Movie movie;
 
@@ -20,7 +20,7 @@ public class Viewing {
     private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(nullable = false)
     @NotNull
     private User user;
 
@@ -49,6 +49,7 @@ public class Viewing {
 
     public void setMovie(Movie movie) {
         this.movie = movie;
+        movie.getViewings().add(this);
     }
 
     public LocalDate getDate() {
@@ -65,6 +66,7 @@ public class Viewing {
 
     public void setUser(User user) {
         this.user = user;
+        user.getViewings().add(this);
     }
 
     public float getRatingUser() {

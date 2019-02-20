@@ -27,18 +27,16 @@ public class Movie {
     private short year;
 
     @ManyToMany
-    @JoinTable(name = "movie_country",
-            joinColumns = @JoinColumn(name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "country_id"))
+    @JoinTable
     private List<Country> countries = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "director_id", nullable = false)
+    @JoinColumn(nullable = false)
     @NotNull
     private Person director;
 
     @ManyToOne
-    @JoinColumn(name = "screenwriter_id", nullable = false)
+    @JoinColumn(nullable = false)
     @NotNull
     private Person screenwriter;
 
@@ -47,9 +45,7 @@ public class Movie {
     private String tagLine;
 
     @ManyToMany
-    @JoinTable(name = "movie_genre",
-            joinColumns = @JoinColumn(name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    @JoinTable
     private List<Genre> genres = new ArrayList<>();
 
     @Column(nullable = false)
@@ -57,9 +53,7 @@ public class Movie {
     private short runtime;
 
     @ManyToMany
-    @JoinTable(name = "movie_actor",
-            joinColumns = @JoinColumn(name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "actor_id"))
+    @JoinTable
     private List<Person> actors = new ArrayList<>();
 
     @Column(nullable = false)
@@ -139,6 +133,11 @@ public class Movie {
         return countries;
     }
 
+    public void addCountry(Country country){
+        getCountries().add(country);
+        country.getMovies().add(this);
+    }
+
     public void setCountries(List<Country> countries) {
         this.countries = countries;
     }
@@ -149,6 +148,7 @@ public class Movie {
 
     public void setDirector(Person director) {
         this.director = director;
+        director.getMoviesDirector().add(this);
     }
 
     public Person getScreenwriter() {
@@ -157,6 +157,7 @@ public class Movie {
 
     public void setScreenwriter(Person screenwriter) {
         this.screenwriter = screenwriter;
+        screenwriter.getMoviesScreenwriter().add(this);
     }
 
     public String getTagLine() {
@@ -169,6 +170,11 @@ public class Movie {
 
     public List<Genre> getGenres() {
         return genres;
+    }
+
+    public void addGenre(Genre genre){
+        getGenres().add(genre);
+        genre.getMovies().add(this);
     }
 
     public void setGenres(List<Genre> genres) {
@@ -185,6 +191,11 @@ public class Movie {
 
     public List<Person> getActors() {
         return actors;
+    }
+
+    public void addActor(Person actor){
+        getActors().add(actor);
+        actor.getMoviesActor().add(this);
     }
 
     public void setActors(List<Person> actors) {
