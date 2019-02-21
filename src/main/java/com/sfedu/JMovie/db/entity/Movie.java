@@ -66,9 +66,6 @@ public class Movie {
     @NotNull
     private Float ratingIMDB;
 
-    @OneToMany(mappedBy = "movie")
-    private List<Viewing> viewings = new ArrayList<>();
-
     public Movie(){}
 
     public Movie(@NotNull Integer id, @NotNull String localizedTitle, @NotNull String originalTitle,
@@ -218,11 +215,4 @@ public class Movie {
         this.ratingIMDB = ratingIMDB;
     }
 
-    public List<Viewing> getViewings() {
-        return viewings;
-    }
-
-    public void setViewings(List<Viewing> viewings) {
-        this.viewings = viewings;
-    }
 }

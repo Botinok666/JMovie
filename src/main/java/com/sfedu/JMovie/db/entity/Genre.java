@@ -14,9 +14,6 @@ public class Genre {
     @NotNull
     private String name;
 
-    @ManyToMany(mappedBy = "genres")
-    private List<Movie> movies = new ArrayList<>();
-
     public Genre(){}
 
     public Genre(@NotNull Short id, @NotNull String name){
@@ -40,11 +37,4 @@ public class Genre {
         this.name = name;
     }
 
-    public List<Movie> getMovies() {
-        return movies;
-    }
-
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
-    }
 }

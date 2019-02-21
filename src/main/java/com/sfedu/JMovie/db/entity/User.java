@@ -19,9 +19,6 @@ public class User {
     @NotNull
     private String pwd;
 
-    @OneToMany(mappedBy = "user")
-    private List<Viewing> viewings = new ArrayList<>();
-
     public User(){}
 
     public User(@NotNull String name, @NotNull String pwd){
@@ -53,11 +50,4 @@ public class User {
         this.pwd = pwd;
     }
 
-    public List<Viewing> getViewings() {
-        return viewings;
-    }
-
-    public void setViewings(List<Viewing> viewings) {
-        this.viewings = viewings;
-    }
 }

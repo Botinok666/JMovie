@@ -49,7 +49,6 @@ public class Viewing {
 
     public void setMovie(Movie movie) {
         this.movie = movie;
-        movie.getViewings().add(this);
     }
 
     public LocalDate getDate() {
@@ -66,7 +65,6 @@ public class Viewing {
 
     public void setUser(User user) {
         this.user = user;
-        user.getViewings().add(this);
     }
 
     public float getRatingUser() {
