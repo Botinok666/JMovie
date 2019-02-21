@@ -9,8 +9,7 @@ import java.util.stream.Collectors;
 public final class ViewingConverter {
     private ViewingConverter(){}
     public static ViewingDomain convertToViewingDomain(Viewing viewing){
-        return new ViewingDomain(viewing.getId(), viewing.getUser().getId(),
-                viewing.getDate(), viewing.getMovie().getId(), viewing.getRatingUser());
+        return new ViewingDomain(viewing.getId(), viewing.getDate(), viewing.getRatingUser());
     }
     public static List<ViewingDomain> convertToViewingDomainList(List<Viewing> viewings){
         return viewings.stream()

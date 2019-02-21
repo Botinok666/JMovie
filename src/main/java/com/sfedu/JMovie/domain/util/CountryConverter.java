@@ -1,5 +1,6 @@
 package com.sfedu.JMovie.domain.util;
 
+import com.sfedu.JMovie.api.data.CountryData;
 import com.sfedu.JMovie.db.entity.Country;
 import com.sfedu.JMovie.domain.model.CountryDomain;
 
@@ -14,6 +15,14 @@ public final class CountryConverter {
     public static List<CountryDomain> convertToCountryDomainList(List<Country> countries){
         return countries.stream()
                 .map(CountryConverter::convertToCountryDomain)
+                .collect(Collectors.toList());
+    }
+    public static CountryData convertToCountryDTO(CountryDomain country){
+        return new CountryData(country.getId(), country.getName());
+    }
+    public static List<CountryData> convertToCountryListDTO(List<CountryDomain> countries){
+        return countries.stream()
+                .map(CountryConverter::convertToCountryDTO)
                 .collect(Collectors.toList());
     }
 }

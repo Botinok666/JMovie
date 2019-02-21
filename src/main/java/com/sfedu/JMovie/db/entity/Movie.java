@@ -27,7 +27,6 @@ public class Movie {
     private short year;
 
     @ManyToMany
-    @JoinTable
     private List<Country> countries = new ArrayList<>();
 
     @ManyToOne
@@ -45,7 +44,6 @@ public class Movie {
     private String tagLine;
 
     @ManyToMany
-    @JoinTable
     private List<Genre> genres = new ArrayList<>();
 
     @Column(nullable = false)
@@ -53,7 +51,6 @@ public class Movie {
     private short runtime;
 
     @ManyToMany
-    @JoinTable
     private List<Person> actors = new ArrayList<>();
 
     @Column(nullable = false)
@@ -135,7 +132,6 @@ public class Movie {
 
     public void addCountry(Country country){
         getCountries().add(country);
-        country.getMovies().add(this);
     }
 
     public void setCountries(List<Country> countries) {
@@ -148,7 +144,6 @@ public class Movie {
 
     public void setDirector(Person director) {
         this.director = director;
-        director.getMoviesDirector().add(this);
     }
 
     public Person getScreenwriter() {
@@ -157,7 +152,6 @@ public class Movie {
 
     public void setScreenwriter(Person screenwriter) {
         this.screenwriter = screenwriter;
-        screenwriter.getMoviesScreenwriter().add(this);
     }
 
     public String getTagLine() {
@@ -174,7 +168,6 @@ public class Movie {
 
     public void addGenre(Genre genre){
         getGenres().add(genre);
-        genre.getMovies().add(this);
     }
 
     public void setGenres(List<Genre> genres) {
@@ -189,16 +182,15 @@ public class Movie {
         this.runtime = runtime;
     }
 
+    public void addActor(Person actor){
+        getActors().add(actor);
+    }
+
     public List<Person> getActors() {
         return actors;
     }
 
-    public void addActor(Person actor){
-        getActors().add(actor);
-        actor.getMoviesActor().add(this);
-    }
-
-    public void setActors(List<Person> actors) {
+    public void setActors(ArrayList<Person> actors) {
         this.actors = actors;
     }
 

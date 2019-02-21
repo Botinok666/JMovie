@@ -2,9 +2,7 @@ package com.sfedu.JMovie.db.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Person {
@@ -16,13 +14,13 @@ public class Person {
     private String name;
 
     @OneToMany(mappedBy = "director")
-    private List<Movie> moviesDirector = new ArrayList<>();
+    private Set<Movie> moviesDirector = new HashSet<>();
 
     @OneToMany(mappedBy = "screenwriter")
-    private List<Movie> moviesScreenwriter = new ArrayList<>();
+    private Set<Movie> moviesScreenwriter = new HashSet<>();
 
     @ManyToMany(mappedBy = "actors")
-    private List<Movie> moviesActor = new ArrayList<>();
+    private Set<Movie> moviesActor = new HashSet<>();
 
     public Person(){}
 
@@ -47,27 +45,27 @@ public class Person {
         this.name = name;
     }
 
-    public List<Movie> getMoviesDirector() {
+    public Set<Movie> getMoviesDirector() {
         return moviesDirector;
     }
 
-    public void setMoviesDirector(List<Movie> moviesDirector) {
+    public void setMoviesDirector(HashSet<Movie> moviesDirector) {
         this.moviesDirector = moviesDirector;
     }
 
-    public List<Movie> getMoviesScreenwriter() {
+    public Set<Movie> getMoviesScreenwriter() {
         return moviesScreenwriter;
     }
 
-    public void setMoviesScreenwriter(List<Movie> moviesScreenwriter) {
+    public void setMoviesScreenwriter(HashSet<Movie> moviesScreenwriter) {
         this.moviesScreenwriter = moviesScreenwriter;
     }
 
-    public List<Movie> getMoviesActor() {
+    public Set<Movie> getMoviesActor() {
         return moviesActor;
     }
 
-    public void setMoviesActor(List<Movie> moviesActor) {
+    public void setMoviesActor(HashSet<Movie> moviesActor) {
         this.moviesActor = moviesActor;
     }
 }
