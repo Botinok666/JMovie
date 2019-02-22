@@ -11,10 +11,19 @@ public final class MovieConverter {
     private MovieConverter(){}
 
     public static MovieDomain convertToMovieDomain(Movie movie){
-        return new MovieDomain(movie.getId(), movie.getLocalizedTitle(),
+        MovieDomain domain = new MovieDomain(movie.getId(), movie.getLocalizedTitle(),
                 movie.getOriginalTitle(), movie.getPosterLink(), movie.getYear(),
                 movie.getTagLine(), movie.getRuntime(), movie.getStoryline(),
                 movie.getRatingKP(), movie.getRatingIMDB());
+        domain.setDirector(PersonConverter.convertToPersonDomain(movie.getDirector()));
+        domain.setScreenwriter(PersonConverter.convertToPersonDomain(movie.getScreenwriter()));
+        CountryConverter.convertToCountryDomainList(movie.getCountries())
+                .forEach(domain::addCountry);
+        GenreConverter.convertToGenreDomainList(movie.getGenres())
+                .forEach(domain::addGenre);
+        PersonConverter.convertToPersonDomainList(movie.getActors())
+                .forEach(domain::addActor);
+        return domain;
     }
 
     public static List<MovieDomain> convertToMovieDomainList(List<Movie> movies){
@@ -24,10 +33,19 @@ public final class MovieConverter {
     }
 
     public static MovieData convertToMovieDTO(MovieDomain movie){
-        return new MovieData(movie.getId(), movie.getLocalizedTitle(),
+        MovieData data = new MovieData(movie.getId(), movie.getLocalizedTitle(),
                 movie.getOriginalTitle(), movie.getPosterLink(), movie.getYear(),
                 movie.getTagLine(), movie.getRuntime(), movie.getStoryline(),
                 movie.getRatingKP(), movie.getRatingIMDB());
+        data.setDirector(PersonConverter.convertToPersonDTO(movie.getDirector()));
+        data.setScreenwriter(PersonConverter.convertToPersonDTO(movie.getScreenwriter()));
+        CountryConverter.convertToCountryListDTO(movie.getCountries())
+                .forEach(data::addCountry);
+        GenreConverter.convertToGenreListDTO(movie.getGenres())
+                .forEach(data::addGenre);
+        PersonConverter.convertToPersonListDTO(movie.getActors())
+                .forEach(data::addActor);
+        return data;
     }
 
     public static List<MovieData> convertToMovieListDTO(List<MovieDomain> movies){

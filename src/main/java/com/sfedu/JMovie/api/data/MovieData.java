@@ -1,13 +1,21 @@
 package com.sfedu.JMovie.api.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MovieData {
     private Integer id;
     private String localizedTitle;
     private String originalTitle;
     private String posterLink;
     private short year;
+    private List<CountryData> countries = new ArrayList<>();
+    private PersonData director;
+    private PersonData screenwriter;
     private String tagLine;
+    private List<GenreData> genres = new ArrayList<>();
     private short runtime;
+    private List<PersonData> actors = new ArrayList<>();
     private String storyline;
     private float ratingKP;
     private float ratingIMDB;
@@ -104,5 +112,45 @@ public class MovieData {
 
     public void setRatingIMDB(float ratingIMDB) {
         this.ratingIMDB = ratingIMDB;
+    }
+
+    public List<CountryData> getCountries() {
+        return countries;
+    }
+
+    public void addCountry(CountryData country) {
+        this.getCountries().add(country);
+    }
+
+    public List<GenreData> getGenres() {
+        return genres;
+    }
+
+    public void addGenre(GenreData genre) {
+        this.getGenres().add(genre);
+    }
+
+    public List<PersonData> getActors() {
+        return actors;
+    }
+
+    public void addActor(PersonData actor) {
+        this.getActors().add(actor);
+    }
+
+    public PersonData getDirector() {
+        return director;
+    }
+
+    public void setDirector(PersonData director) {
+        this.director = director;
+    }
+
+    public PersonData getScreenwriter() {
+        return screenwriter;
+    }
+
+    public void setScreenwriter(PersonData screenwriter) {
+        this.screenwriter = screenwriter;
     }
 }
