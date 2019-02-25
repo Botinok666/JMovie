@@ -1,9 +1,7 @@
 package com.sfedu.JMovie.domain.service;
 
-import com.sfedu.JMovie.api.data.CountryData;
-import com.sfedu.JMovie.api.data.GenreData;
 import com.sfedu.JMovie.api.data.MovieData;
-import com.sfedu.JMovie.api.data.PersonData;
+import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.domain.model.*;
 
 import java.time.LocalDate;
@@ -23,7 +21,7 @@ public interface IMovieService {
     List<MovieDomain> getMovieListByCountryId(Short id);
     List<MovieDomain> getMovieListByActorId(Integer id);
     List<PersonDomain> getPersonListByNameContains(String name);
-    UserDomain createUser(String name);
+    UserDomain createUser(String name, RoleType role);
     UserDomain updateUserPwd(Short id, String pwd);
     ViewingDomain createViewing(LocalDate date, Short user_id,
                                 Integer movie_id, float ratingUser);

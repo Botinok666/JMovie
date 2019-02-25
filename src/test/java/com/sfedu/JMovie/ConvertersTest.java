@@ -1,6 +1,7 @@
 package com.sfedu.JMovie;
 
 import com.sfedu.JMovie.api.data.*;
+import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.domain.model.*;
 import com.sfedu.JMovie.domain.util.*;
@@ -126,7 +127,7 @@ public class ConvertersTest {
     }
     @Test
     public void testUserConverters(){
-        final User entity = new User("Jack", "p@ssw0rd");
+        final User entity = new User("Jack", "p@ssw0rd", RoleType.ROLE_ADMIN);
         entity.setId((short)12);
         final UserDomain domain = UserConverter.convertToUserDomain(entity);
         //Проверим объект domain
@@ -134,6 +135,7 @@ public class ConvertersTest {
         assertEquals(entity.getId(), domain.getId());
         assertEquals(entity.getName(), domain.getName());
         assertEquals(entity.getPwd(), domain.getPwd());
+        assertEquals(entity.getRole(), domain.getRole());
 
         final UserData data = UserConverter.convertToUserDTO(domain);
         //Проверим объект data
@@ -141,12 +143,13 @@ public class ConvertersTest {
         assertEquals(entity.getId(), data.getId());
         assertEquals(entity.getName(), data.getName());
         assertEquals(entity.getPwd(), data.getPwd());
+        assertEquals(entity.getRole(), data.getRole());
     }
     @Test
     public void testUserListConverters(){
         final List<User> entities = Arrays.asList(
-                new User("Alice", "qwerty"),
-                new User("Bob", "12345"));
+                new User("Alice", "qwerty", RoleType.ROLE_ADMIN),
+                new User("Bob", "12345", RoleType.ROLE_USER));
         final List<UserDomain> domains =
                 UserConverter.convertToUserDomainList(entities);
         //Проверим объекты domain

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public final class UserConverter {
     private UserConverter(){}
     public static UserDomain convertToUserDomain(User user){
-        return new UserDomain(user.getId(), user.getName(), user.getPwd());
+        return new UserDomain(user.getId(), user.getName(), user.getPwd(), user.getRole());
     }
     public static List<UserDomain> convertToUserDomainList(List<User> users){
         return users.stream()
@@ -18,7 +18,7 @@ public final class UserConverter {
                 .collect(Collectors.toList());
     }
     public static UserData convertToUserDTO(UserDomain user){
-        return new UserData(user.getId(), user.getName(), user.getPwd());
+        return new UserData(user.getId(), user.getName(), user.getPwd(), user.getRole());
     }
     public static List<UserData> convertToUserListDTO(List<UserDomain> users){
         return users.stream()

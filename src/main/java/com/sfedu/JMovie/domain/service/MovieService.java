@@ -1,6 +1,7 @@
 package com.sfedu.JMovie.domain.service;
 
 import com.sfedu.JMovie.api.data.MovieData;
+import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
 import com.sfedu.JMovie.domain.model.*;
@@ -92,9 +93,9 @@ public class MovieService implements IMovieService {
                 personRepository.findByNameLikeIgnoreCase(name));
     }
     @Override
-    public UserDomain createUser(String name){
+    public UserDomain createUser(String name, RoleType role){
         return UserConverter.convertToUserDomain(userRepository
-                .save(new User(name, "")));
+                .save(new User(name, "", role)));
     }
     @Override
     public UserDomain updateUserPwd(Short id, String pwd){

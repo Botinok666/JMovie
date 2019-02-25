@@ -1,5 +1,6 @@
 package com.sfedu.JMovie;
 
+import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
 import org.junit.Test;
@@ -104,7 +105,7 @@ public class DBTest {
     public void testSaveUpdateUser(){
         final String name = "user";
         final String pwd = "p@ssw0rd";
-        final User user = new User(name, pwd);
+        final User user = new User(name, pwd, RoleType.ROLE_ADMIN);
         //Сохраняем и получаем сохранённый объект
         final User saved = userRepository.save(user);
         assertNotNull(saved.getId());
@@ -473,8 +474,10 @@ public class DBTest {
         assertEquals(1, countryRepository.findAll().size());
 
         //Создадим двух пользователей
-        final User user1 = userRepository.save(new User("name", "p@ssw0rd"));
-        final User user2 = userRepository.save(new User("user", "password"));
+        final User user1 = userRepository.save(new User(
+                "name", "p@ssw0rd", RoleType.ROLE_ADMIN));
+        final User user2 = userRepository.save(new User(
+                "user", "password", RoleType.ROLE_USER));
 
         //Создадим 4 просмотра
         final Viewing viewing1 = new Viewing(LocalDate.now().minusDays(1), 0.4f);

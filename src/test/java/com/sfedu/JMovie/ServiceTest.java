@@ -4,6 +4,7 @@ import com.sfedu.JMovie.api.data.CountryData;
 import com.sfedu.JMovie.api.data.GenreData;
 import com.sfedu.JMovie.api.data.MovieData;
 import com.sfedu.JMovie.api.data.PersonData;
+import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
 import com.sfedu.JMovie.domain.model.*;
@@ -118,7 +119,7 @@ public class ServiceTest {
         Mockito.when(movieRepository.save(Mockito.any(Movie.class)))
                 .thenReturn(movies.get(0));
 
-        final User user = new User("Jack", "");
+        final User user = new User("Jack", "", RoleType.ROLE_USER);
         user.setId((short)12);
         Mockito.when(userRepository.findById((short)12))
                 .thenReturn(Optional.of(user));
@@ -245,7 +246,7 @@ public class ServiceTest {
     }
     @Test
     public void testCreateUser(){
-        final UserDomain user = movieService.createUser("Jack");
+        final UserDomain user = movieService.createUser("Jack", RoleType.ROLE_USER);
 
         assertNotNull(user);
         assertEquals("Jack", user.getName());
