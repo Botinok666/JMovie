@@ -111,6 +111,7 @@ public class DBTest {
         assertNotNull(saved.getId());
         assertEquals(name, saved.getName());
         assertEquals(pwd, saved.getPwd());
+        assertEquals(RoleType.ROLE_ADMIN, saved.getRole());
         //Получаем его же из репозитория по сгенерированному ID
         Optional<User> selectedOpt = userRepository.findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
@@ -119,6 +120,7 @@ public class DBTest {
         assertEquals(saved.getId(), selected.getId());
         assertEquals(saved.getName(), selected.getName());
         assertEquals(saved.getPwd(), selected.getPwd());
+        assertEquals(saved.getRole(), selected.getRole());
         //Меняем пароль
         selected.setPwd("password");
         //Сохраняем и получаем обновлённый объект

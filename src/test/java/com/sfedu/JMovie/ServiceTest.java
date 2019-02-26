@@ -121,8 +121,8 @@ public class ServiceTest {
 
         final User user = new User("Jack", "", RoleType.ROLE_USER);
         user.setId((short)12);
-        Mockito.when(userRepository.findById((short)12))
-                .thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByName("Jack"))
+                .thenReturn(user);
         Mockito.when(userRepository.save(Mockito.any(User.class)))
                 .thenReturn(user);
 
@@ -159,8 +159,8 @@ public class ServiceTest {
         assertEquals("Tag2", movies.get(1).getTagLine());
     }
     @Test
-    public void testGetUserById(){
-        final UserDomain user = movieService.getUserById((short)12);
+    public void testGetUserByName(){
+        final UserDomain user = movieService.getUserByName("Jack");
 
         assertNotNull(user);
         assertEquals("Jack", user.getName());

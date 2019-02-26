@@ -2,8 +2,6 @@ package com.sfedu.JMovie;
 
 import com.sfedu.JMovie.api.data.*;
 import com.sfedu.JMovie.db.RoleType;
-import com.sfedu.JMovie.db.entity.*;
-import com.sfedu.JMovie.db.repository.UserRepository;
 import com.sfedu.JMovie.domain.service.MovieService;
 import com.sfedu.JMovie.domain.util.UserConverter;
 import org.slf4j.Logger;
@@ -16,9 +14,12 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class JMovieApplication {
@@ -36,11 +37,25 @@ public class JMovieApplication {
 		    UserData user = UserConverter.convertToUserDTO(
 		            service.createUser("user", RoleType.ROLE_ADMIN));
 		    service.updateUserPwd(user.getId(), passwordEncoder.encode("pass"));
-		    log.info("User created: " + service.getUserById(user.getId()).getId());
+		    log.info("User created: " + service.getUserByName(user.getName()).getId());
+
+            try(ZipFile content = new ZipFile("./src/main/Resources/content.zip")) {
+                Enumeration<? extends ZipEntry> entries = content.entries();
+                short entryCount = 0;
+                while (entries.hasMoreElements()) {
+                    content.getInputStream(entries.nextElement());
+                    entryCount++;
+                }
+                log.info("Entries in zip file: " + entryCount);
+            }
+            catch (IOException e){
+                log.info("Error opening content.zip");
+            }
 
             final MovieData movie1 = new MovieData(
                     42, "Фильм1", "Movie1",
-                    "http://imdb.com", (short)1999, "TagLine1",
+                    "https://st.kp.yandex.net/images/film_iphone/iphone360_893916.jpg",
+                    (short)1999, "TagLine1",
                     (short)139, "Storyline1", 8.8f, 8.869f);
             //Создаём записи в персонах, жанрах и странах для первого фильма
             movie1.setDirector(new PersonData(8, "Director1"));
@@ -62,7 +77,8 @@ public class JMovieApplication {
             //Создаём второй фильм
             final MovieData movie2 = new MovieData(
                     23, "Фильм2", "Movie2",
-                    "http://imdb.com", (short)1999, "TagLine2",
+                    "https://st.kp.yandex.net/images/film_iphone/iphone360_361.jpg",
+                    (short)1999, "TagLine2",
                     (short)139, "Storyline2", 7.8f, 7.869f);
             //Создаём записи в персонах, жанрах и странах для первого фильма
             movie2.setDirector(new PersonData(8, "Director1"));

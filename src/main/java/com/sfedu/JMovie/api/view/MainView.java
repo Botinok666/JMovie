@@ -44,7 +44,7 @@ public class MainView extends VerticalLayout {
                     SecurityContextHolder.clearContext();
                     VaadinSession.getCurrent().close();
                     ui.getSession().close();
-                    ui.navigate("/login?logout");// to redirect user to the login page
+                    ui.navigate("login/logout");// to redirect user to the login page
         }));
 
         add(actions, movieGrid);
@@ -55,6 +55,9 @@ public class MainView extends VerticalLayout {
                             2000, Notification.Position.BOTTOM_CENTER));
             add(addUser);
         }
+        movieGrid.addItemDoubleClickListener(event ->
+                movieGrid.getUI().ifPresent(ui ->
+                        ui.navigate(String.format("movie/%d", event.getItem().getId()))));
         add(logout);
         movieGrid.setItems(MovieConverter.convertToMovieListDTO(
                 movieService.getTenMoviesPaged(0)));

@@ -14,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @Route
@@ -49,10 +48,7 @@ public class LoginView extends VerticalLayout
             Authentication authenticate = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
             if (authenticate.isAuthenticated()) {
-                Authentication fullyAuthenticated =
-                        new UsernamePasswordAuthenticationToken(username, password);
-                SecurityContext context = SecurityContextHolder.getContext();
-                context.setAuthentication(fullyAuthenticated);
+                SecurityContextHolder.getContext().setAuthentication(authenticate);
                 return true;
             }
         } catch (BadCredentialsException ex) {

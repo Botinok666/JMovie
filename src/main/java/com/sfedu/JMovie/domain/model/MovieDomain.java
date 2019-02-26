@@ -1,21 +1,15 @@
 package com.sfedu.JMovie.domain.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MovieDomain {
     private Integer id;
     private String localizedTitle;
     private String originalTitle;
     private String posterLink;
     private short year;
-    private List<CountryDomain> countries = new ArrayList<>();
     private PersonDomain director;
     private PersonDomain screenwriter;
     private String tagLine;
-    private List<GenreDomain> genres = new ArrayList<>();
     private short runtime;
-    private List<PersonDomain> actors = new ArrayList<>();
     private String storyline;
     private float ratingKP;
     private float ratingIMDB;
@@ -72,30 +66,6 @@ public class MovieDomain {
 
     public float getRatingIMDB() {
         return ratingIMDB;
-    }
-
-    public List<CountryDomain> getCountries() {
-        return countries;
-    }
-
-    public void addCountry(CountryDomain country) {
-        this.getCountries().add(country);
-    }
-
-    public List<GenreDomain> getGenres() {
-        return genres;
-    }
-
-    public void addGenre(GenreDomain genre) {
-        this.getGenres().add(genre);
-    }
-
-    public List<PersonDomain> getActors() {
-        return actors;
-    }
-
-    public void addActor(PersonDomain actor) {
-        this.getActors().add(actor);
     }
 
     public PersonDomain getDirector() {

@@ -1,7 +1,6 @@
 package com.sfedu.JMovie.api.security;
 
 import com.sfedu.JMovie.db.RoleType;
-import com.sfedu.JMovie.db.entity.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,14 +27,14 @@ public class SecurityContextUtils {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(type.name());
         return authentication.getAuthorities().contains(grantedAuthority);
     }
-//
-//    public static User getUser() {
-//        Authentication authentication = authentication();
-//        if (authentication == null) {
-//            return new User();
-//        }
-//        return (User)authentication.getPrincipal();
-//    }
+
+    public static SecurityUserDetails getUser() {
+        Authentication authentication = authentication();
+        if (authentication == null) {
+            return null;
+        }
+        return (SecurityUserDetails)authentication.getPrincipal();
+    }
 
 //    public static RoleType getRole() {
 //        Authentication authentication = authentication();

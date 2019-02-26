@@ -9,6 +9,7 @@ import com.sfedu.JMovie.domain.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,10 +42,9 @@ public class MovieService implements IMovieService {
                 .getContent());
     }
     @Override
-    public UserDomain getUserById(Short id){
+    public UserDomain getUserByName(String name){
         return UserConverter.convertToUserDomain(userRepository
-                .findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No such user")));
+                .findByName(name));
     }
     @Override
     public MovieDomain getMovieById(Integer id){
@@ -56,6 +56,25 @@ public class MovieService implements IMovieService {
     public List<MovieDomain> getMovieListByTitleContains(String title){
         return MovieConverter.convertToMovieDomainList(movieRepository
                 .findByLocalizedTitleLikeIgnoreCase(title));
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public void addMissingListsToMovie(MovieData movieData){
+        Movie movie = movieRepository
+                .findById(movieData.getId())
+                .orElseThrow(() -> new NoSuchElementException("No such movie"));
+        movie.getCountries().stream()
+                .map(country -> CountryConverter.convertToCountryDTO(
+                        CountryConverter.convertToCountryDomain(country)))
+                .forEach(movieData::addCountry);
+        movie.getGenres().stream()
+                .map(genre -> GenreConverter.convertToGenreDTO(
+                        GenreConverter.convertToGenreDomain(genre)))
+                .forEach(movieData::addGenre);
+        movie.getActors().stream()
+                .map(actor -> PersonConverter.convertToPersonDTO(
+                        PersonConverter.convertToPersonDomain(actor)))
+                .forEach(movieData::addActor);
     }
     @Override
     public List<MovieDomain> getMovieListByStorylineContains(String story){

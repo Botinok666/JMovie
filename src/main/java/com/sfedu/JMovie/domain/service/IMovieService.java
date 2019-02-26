@@ -11,8 +11,9 @@ public interface IMovieService {
     List<GenreDomain> getAllGenres();
     List<CountryDomain> getAllCountries();
     List<MovieDomain> getTenMoviesPaged(int page);
-    UserDomain getUserById(Short id);
+    UserDomain getUserByName(String name);
     MovieDomain getMovieById(Integer id);
+    void addMissingListsToMovie(MovieData movieData);
     List<MovieDomain> getMovieListByTitleContains(String title);
     List<MovieDomain> getMovieListByStorylineContains(String story);
     List<MovieDomain> getMovieListByGenreId(Short id);
