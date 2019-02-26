@@ -39,7 +39,7 @@ public class JMovieApplication {
 		    service.updateUserPwd(user.getId(), passwordEncoder.encode("pass"));
 		    log.info("User created: " + service.getUserByName(user.getName()).getId());
 
-            try(ZipFile content = new ZipFile("./src/main/Resources/content.zip")) {
+            try(ZipFile content = new ZipFile("./src/main/Resources/content")) {
                 Enumeration<? extends ZipEntry> entries = content.entries();
                 short entryCount = 0;
                 while (entries.hasMoreElements()) {
@@ -49,7 +49,7 @@ public class JMovieApplication {
                 log.info("Entries in zip file: " + entryCount);
             }
             catch (IOException e){
-                log.info("Error opening content.zip");
+                log.info("Error opening content");
             }
 
             final MovieData movie1 = new MovieData(
