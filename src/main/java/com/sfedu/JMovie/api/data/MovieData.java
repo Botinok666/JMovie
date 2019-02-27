@@ -19,6 +19,7 @@ public class MovieData {
     private String storyline;
     private float ratingKP;
     private float ratingIMDB;
+    public MovieData(){}
     public MovieData(Integer id, String localizedTitle, String originalTitle,
                        String posterLink, short year, String tagLine, short runtime,
                        String storyline, float ratingKP, float ratingIMDB){
