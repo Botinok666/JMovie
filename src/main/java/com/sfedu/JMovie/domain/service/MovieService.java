@@ -4,10 +4,12 @@ import com.sfedu.JMovie.api.data.MovieData;
 import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
+import com.sfedu.JMovie.domain.BoolW;
 import com.sfedu.JMovie.domain.model.*;
 import com.sfedu.JMovie.domain.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +38,11 @@ public class MovieService implements IMovieService {
                 countryRepository.findAll());
     }
     @Override
-    public List<MovieDomain> getTenMoviesPaged(int page){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findAll(PageRequest.of(page, 10))
-                .getContent());
+    public List<MovieDomain> getTenMoviesPaged(int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findAll(PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
     public UserDomain getUserByName(String name){
@@ -47,19 +50,25 @@ public class MovieService implements IMovieService {
                 .findByName(name));
     }
     @Override
-    public MovieDomain getMovieById(Integer id){
+    public MovieDomain getMovieById(Integer id)
+            throws NoSuchElementException {
         return MovieConverter.convertToMovieDomain(movieRepository
                 .findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No such movie")));
     }
     @Override
-    public List<MovieDomain> getMovieListByTitleContains(String title){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findByLocalizedTitleLikeIgnoreCase(title));
+    public List<MovieDomain> getMovieListByTitleContains(
+            String title, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByLocalizedTitleContainingOrOriginalTitleContainingAllIgnoreCase(
+                        title, title, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
     @Transactional(readOnly = true)
-    public void addMissingListsToMovie(MovieData movieData){
+    public void addMissingListsToMovie(MovieData movieData)
+            throws NoSuchElementException {
         Movie movie = movieRepository
                 .findById(movieData.getId())
                 .orElseThrow(() -> new NoSuchElementException("No such movie"));
@@ -77,39 +86,65 @@ public class MovieService implements IMovieService {
                 .forEach(movieData::addActor);
     }
     @Override
-    public List<MovieDomain> getMovieListByStorylineContains(String story){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findByStorylineLikeIgnoreCase(story));
+    public List<MovieDomain> getMovieListByStorylineContains(
+            String story, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByStorylineContainingIgnoreCase(story, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
-    public List<MovieDomain> getMovieListByGenreId(Short id){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findByGenresId(id));
+    public List<MovieDomain> getMovieListByGenreId(
+            Short id, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByGenresId(id, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
-    public List<MovieDomain> getMovieListByDirectorId(Integer id){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findByDirectorId(id));
+    public List<MovieDomain> getMovieListByDirectorId(
+            Integer id, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByDirectorId(id, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
-    public List<MovieDomain> getMovieListByScreenwriterId(Integer id){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findByScreenwriterId(id));
+    public List<MovieDomain> getMovieListByScreenwriterId(
+            Integer id, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByScreenwriterId(id, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
-    public List<MovieDomain> getMovieListByCountryId(Short id){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findByCountriesId(id));
+    public List<MovieDomain> getMovieListByCountryId(
+            Short id, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByCountriesId(id, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
-    public List<MovieDomain> getMovieListByActorId(Integer id){
-        return MovieConverter.convertToMovieDomainList(movieRepository
-                .findByActorsId(id));
+    public List<MovieDomain> getMovieListByActorId(
+            Integer id, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByActorsId(id, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
+    }
+    @Override
+    public List<MovieDomain> getMovieListByYearPeriod(
+            Short start, Short end, int page, BoolW hasNext){
+        Slice<Movie> result = movieRepository
+                .findByYearBetween(start, end, PageRequest.of(page, 10));
+        hasNext.setValue(result.hasNext());
+        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
     public List<PersonDomain> getPersonListByNameContains(String name){
         return PersonConverter.convertToPersonDomainList(
-                personRepository.findByNameLikeIgnoreCase(name));
+                personRepository.findTop10ByNameContainingIgnoreCase(name));
     }
     @Override
     public UserDomain createUser(String name, RoleType role){
@@ -126,7 +161,8 @@ public class MovieService implements IMovieService {
     }
     @Override
     public ViewingDomain createViewing(LocalDate date, Short user_id,
-                                       Integer movie_id, float ratingUser){
+                                       Integer movie_id, float ratingUser)
+            throws NoSuchElementException {
         Viewing viewing = new Viewing(date, ratingUser);
         viewing.setUser(userRepository
                 .findById(user_id)

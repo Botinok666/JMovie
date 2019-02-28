@@ -16,10 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -49,7 +46,7 @@ public class JMovieApplication {
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
                     try {
-                        service.createMovie(KinoPoiskParser.parse(
+                        service.createMovie(KinoPoiskParser.parseStream(
                                 content.getInputStream(entry)
                         ));
                     }

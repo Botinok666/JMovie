@@ -60,7 +60,7 @@ public class ServiceTest {
         final List<Person> actors = Arrays.asList(
                 new Person(14, "Hillary Swank"),
                 new Person(67, "Michael Shannon"));
-        Mockito.when(personRepository.findByNameLikeIgnoreCase("Name"))
+        Mockito.when(personRepository.findTop10ByNameContainingIgnoreCase("Name"))
                 .thenReturn(actors);
         Mockito.when(personRepository.saveAll(Mockito.anyList()))
                 .thenReturn(actors);
@@ -102,9 +102,9 @@ public class ServiceTest {
                 .findAll(Mockito.any(PageRequest.class)))
                 .thenReturn(moviesPage);
         Mockito.when(movieRepository.findById(13)).thenReturn(Optional.of(movies.get(0)));
-        Mockito.when(movieRepository.findByLocalizedTitleLikeIgnoreCase("Фильм"))
+        Mockito.when(movieRepository.findByLocalizedTitleContainingOrOriginalTitleContainingAllIgnoreCase("Фильм"))
                 .thenReturn(movies);
-        Mockito.when(movieRepository.findByStorylineLikeIgnoreCase("Story"))
+        Mockito.when(movieRepository.findByStorylineContainingIgnoreCase("Story"))
                 .thenReturn(movies);
         Mockito.when(movieRepository.findByGenresId((short)1))
                 .thenReturn(movies);

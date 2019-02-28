@@ -8,7 +8,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Optional;
 
 public final class KinoPoiskParser {
@@ -40,12 +42,10 @@ public final class KinoPoiskParser {
         );
     }
 
-    public static MovieData parse(InputStream stream) throws NoSuchFieldException {
+    private static MovieData parse(Document document) throws NoSuchFieldException {
         MovieData movie = new MovieData();
         stateEnum state = stateEnum.ID;
         try {
-            Document document = Jsoup.parse(stream, "windows-1251",
-                    "https://kinopoisk.ru");
             Element element = document
                     .selectFirst("div[class=\"js-ott-widget online_button_film\"]");
             movie.setId(Integer.parseInt(element
@@ -116,7 +116,7 @@ public final class KinoPoiskParser {
             Optional.ofNullable(element.selectFirst("span.rating_ball"))
                     .ifPresent(e -> movie
                             .setRatingKP(Float.parseFloat(e.text()))
-            );
+                    );
             state = stateEnum.RatingIMDB;
             movie.setRatingIMDB(Float.parseFloat(element
                     .child(1)
@@ -126,5 +126,26 @@ public final class KinoPoiskParser {
         } catch (Exception e) {
             throw new NoSuchFieldException("Error occurred when parsing " + state.toString());
         }
+    }
+
+    public static MovieData parseStream(InputStream stream) throws NoSuchFieldException {
+        Document document;
+        try {
+            document = Jsoup.parse(stream, "windows-1251",
+                    "https://kinopoisk.ru");
+        } catch (IOException e){
+            throw new NoSuchFieldException("Error occurred when opening stream");
+        }
+        return parse(document);
+    }
+
+    public static MovieData parseURL(URL url) throws NoSuchFieldException {
+        Document document;
+        try {
+            document = Jsoup.parse(url, 5000);
+        } catch (IOException e){
+            throw new NoSuchFieldException("Error occurred when opening stream");
+        }
+        return parse(document);
     }
 }

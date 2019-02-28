@@ -53,7 +53,7 @@ public class LoginView extends VerticalLayout
             }
         } catch (BadCredentialsException ex) {
             Notification.show("Incorrect username or password",
-                    5000, Notification.Position.TOP_CENTER);
+                    3000, Notification.Position.TOP_CENTER);
         } catch (Exception ex) {
             Notification.show("An unexpected error occurred",
                     3000, Notification.Position.MIDDLE);
