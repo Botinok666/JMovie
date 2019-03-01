@@ -25,14 +25,19 @@ public class LoginView extends VerticalLayout
     public LoginView(){
         FormLayout content = new FormLayout();
         TextField name = new TextField("Login");
-        name.setValue("user");
+        name.setValue("admin");
         PasswordField pwd = new PasswordField("Password");
         pwd.setValue("pass");
-        Button send = new Button("Sign in", VaadinIcon.CHECK.create());
+        Button send = new Button("Sign in", VaadinIcon.SIGN_IN.create());
         send.addClickListener(event -> {
             send.setEnabled(false);
             if (login(name.getValue(), pwd.getValue())) {
-                send.getUI().ifPresent(ui -> ui.navigate(MainView.class));
+                send.getUI().ifPresent(ui -> {
+                    if (pwd.getValue().isEmpty())
+                        ui.navigate("account/emptyPwd");
+                    else
+                        ui.navigate(MainView.class);
+                });
             } else {
                 send.setEnabled(true);
             }

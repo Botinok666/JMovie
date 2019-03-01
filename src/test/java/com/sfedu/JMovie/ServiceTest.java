@@ -151,7 +151,7 @@ public class ServiceTest {
     }
     @Test
     public void testGetTenMoviesPaged(){
-        final List<MovieDomain> movies = movieService.getTenMoviesPaged(0);
+        final List<MovieDomain> movies = movieService.getAllMovies(0);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());

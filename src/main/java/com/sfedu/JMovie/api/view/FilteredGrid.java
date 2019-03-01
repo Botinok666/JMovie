@@ -4,6 +4,7 @@ import com.sfedu.JMovie.api.data.CountryData;
 import com.sfedu.JMovie.api.data.GenreData;
 import com.sfedu.JMovie.api.data.MovieData;
 import com.sfedu.JMovie.api.data.PersonData;
+import com.sfedu.JMovie.api.security.SecurityContextUtils;
 import com.sfedu.JMovie.domain.BoolW;
 import com.sfedu.JMovie.domain.service.IMovieService;
 import com.sfedu.JMovie.domain.util.CountryConverter;
@@ -84,7 +85,7 @@ public class FilteredGrid extends VerticalLayout {
 
         ComboBox<String> filterBy = new ComboBox<>("Фильтр по");
         filterBy.setItems("<нет>", "названию", "году", "стране", "режиссёру",
-                "жанру", "актёру", "сюжету");
+                "жанру", "актёру", "сюжету", "просмотрам");
         filterBy.setValue("<нет>");
         filterBy.setAllowCustomValue(false);
         filterBy.addValueChangeListener(event -> {
@@ -140,7 +141,7 @@ public class FilteredGrid extends VerticalLayout {
                 case "<нет>":
                     setPageHandler(() -> movieGrid.setItems(
                             MovieConverter.convertToMovieListDTO(
-                                    service.getTenMoviesPaged(currentPage, hasNext)
+                                    service.getAllMovies(currentPage, hasNext)
                             )));
                     break;
                 case "названию":
@@ -216,6 +217,16 @@ public class FilteredGrid extends VerticalLayout {
                                             byText.getValue(), currentPage, hasNext)
                             )));
                     break;
+                case "просмотрам":
+                    if (SecurityContextUtils.getUser() == null)
+                        return;
+                    final Short userId = SecurityContextUtils.getUser().getId();
+                    setPageHandler(() -> movieGrid.setItems(
+                            MovieConverter.convertToMovieListDTO(
+                                    service.getMovieListByUserId(
+                                            userId, currentPage, hasNext)
+                            )));
+                    break;
             }
             pageHandler.onChange();
             right.setEnabled(hasNext.getValue());
@@ -229,10 +240,14 @@ public class FilteredGrid extends VerticalLayout {
         movieGrid.setHeightByRows(true);
         setPageHandler(() -> movieGrid.setItems(
                 MovieConverter.convertToMovieListDTO(
-                        service.getTenMoviesPaged(currentPage, hasNext)
+                        service.getAllMovies(currentPage, hasNext)
                 )));
         pageHandler.onChange();
-        movieGrid.setColumns("originalTitle", "localizedTitle", "year", "ratingIMDB");
+        movieGrid.addColumn(MovieData::getOriginalTitle).setHeader("Название").setFlexGrow(5);
+        movieGrid.addColumn(MovieData::getLocalizedTitle).setHeader("Локализация").setFlexGrow(5);
+        movieGrid.addColumn(MovieData::getYear).setHeader("Год").setFlexGrow(1);
+        movieGrid.addColumn(movieData -> movieData.getDirector().getName()).setHeader("Режиссёр").setFlexGrow(4);
+        movieGrid.addColumn(MovieData::getRatingIMDB).setHeader("IMDB").setFlexGrow(1);
         movieGrid.addItemDoubleClickListener(event ->
                 movieGrid.getUI().ifPresent(ui ->
                         ui.navigate(String.format("movie/%d", event.getItem().getId()))));

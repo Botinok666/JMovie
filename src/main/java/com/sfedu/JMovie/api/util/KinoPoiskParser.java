@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -139,12 +140,14 @@ public final class KinoPoiskParser {
         return parse(document);
     }
 
-    public static MovieData parseURL(URL url) throws NoSuchFieldException {
+    public static MovieData parseURL(URL url) throws NoSuchFieldException, SocketTimeoutException {
         Document document;
         try {
             document = Jsoup.parse(url, 5000);
-        } catch (IOException e){
-            throw new NoSuchFieldException("Error occurred when opening stream");
+        } catch (SocketTimeoutException e){
+            throw new SocketTimeoutException(e.getMessage());
+        } catch (IOException e) {
+            throw new NoSuchFieldException("Ошибка при загрузке страницы");
         }
         return parse(document);
     }

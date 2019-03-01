@@ -38,16 +38,15 @@ public class MovieService implements IMovieService {
                 countryRepository.findAll());
     }
     @Override
-    public List<MovieDomain> getTenMoviesPaged(int page, BoolW hasNext){
+    public List<MovieDomain> getAllMovies(int page, BoolW hasNext){
         Slice<Movie> result = movieRepository
                 .findAll(PageRequest.of(page, 10));
         hasNext.setValue(result.hasNext());
         return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
-    public UserDomain getUserByName(String name){
-        return UserConverter.convertToUserDomain(userRepository
-                .findByName(name));
+    public boolean isMovieExists(Integer id){
+        return movieRepository.existsById(id);
     }
     @Override
     public MovieDomain getMovieById(Integer id)
@@ -55,6 +54,17 @@ public class MovieService implements IMovieService {
         return MovieConverter.convertToMovieDomain(movieRepository
                 .findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No such movie")));
+    }
+    @Override
+    public List<MovieDomain> getMovieListByUserId(Short id, int page, BoolW hasNext) {
+        Slice<Viewing> viewings = viewingRepository
+                .findByUserId(id, PageRequest.of(page, 10));
+        hasNext.setValue(viewings.hasNext());
+        return MovieConverter.convertToMovieDomainList(viewings
+                .stream()
+                .map(Viewing::getMovie)
+                .collect(Collectors.toList())
+        );
     }
     @Override
     public List<MovieDomain> getMovieListByTitleContains(
@@ -72,15 +82,18 @@ public class MovieService implements IMovieService {
         Movie movie = movieRepository
                 .findById(movieData.getId())
                 .orElseThrow(() -> new NoSuchElementException("No such movie"));
-        movie.getCountries().stream()
+        movie.getCountries()
+                .stream()
                 .map(country -> CountryConverter.convertToCountryDTO(
                         CountryConverter.convertToCountryDomain(country)))
                 .forEach(movieData::addCountry);
-        movie.getGenres().stream()
+        movie.getGenres()
+                .stream()
                 .map(genre -> GenreConverter.convertToGenreDTO(
                         GenreConverter.convertToGenreDomain(genre)))
                 .forEach(movieData::addGenre);
-        movie.getActors().stream()
+        movie.getActors()
+                .stream()
                 .map(actor -> PersonConverter.convertToPersonDTO(
                         PersonConverter.convertToPersonDomain(actor)))
                 .forEach(movieData::addActor);
@@ -106,14 +119,6 @@ public class MovieService implements IMovieService {
             Integer id, int page, BoolW hasNext){
         Slice<Movie> result = movieRepository
                 .findByDirectorId(id, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
-    }
-    @Override
-    public List<MovieDomain> getMovieListByScreenwriterId(
-            Integer id, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByScreenwriterId(id, PageRequest.of(page, 10));
         hasNext.setValue(result.hasNext());
         return MovieConverter.convertToMovieDomainList(result.getContent());
     }
@@ -173,6 +178,11 @@ public class MovieService implements IMovieService {
         return ViewingConverter.convertToViewingDomain(viewingRepository.save(viewing));
     }
     @Override
+    public List<ViewingDomain> getViewingsByMovieAndUserId(Integer movieId, Short userId) {
+        return ViewingConverter.convertToViewingDomainList(
+                viewingRepository.findByMovieIdAndUserId(movieId, userId));
+    }
+    @Override
     public MovieDomain createMovie(MovieData movieData){
         final Movie movie = new Movie(
                 movieData.getId(), movieData.getLocalizedTitle(), movieData.getOriginalTitle(),
@@ -183,15 +193,18 @@ public class MovieService implements IMovieService {
                 new Person(movieData.getDirector().getId(), movieData.getDirector().getName())));
         movie.setScreenwriter(personRepository.save(
                 new Person(movieData.getScreenwriter().getId(), movieData.getScreenwriter().getName())));
-        personRepository.saveAll(movieData.getActors().stream()
+        personRepository.saveAll(movieData.getActors()
+                .stream()
                 .map(k -> new Person(k.getId(), k.getName()))
                 .collect(Collectors.toList()))
                 .forEach(movie::addActor);
-        genreRepository.saveAll(movieData.getGenres().stream()
+        genreRepository.saveAll(movieData.getGenres()
+                .stream()
                 .map(k -> new Genre(k.getId(), k.getName()))
                 .collect(Collectors.toList()))
                 .forEach(movie::addGenre);
-        countryRepository.saveAll(movieData.getCountries().stream()
+        countryRepository.saveAll(movieData.getCountries()
+                .stream()
                 .map(k -> new Country(k.getId(), k.getName()))
                 .collect(Collectors.toList()))
                 .forEach(movie::addCountry);

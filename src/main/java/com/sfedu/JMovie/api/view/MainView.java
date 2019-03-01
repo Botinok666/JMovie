@@ -1,7 +1,5 @@
 package com.sfedu.JMovie.api.view;
 
-import com.sfedu.JMovie.api.security.SecurityContextUtils;
-import com.sfedu.JMovie.db.RoleType;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -9,8 +7,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,25 +39,12 @@ public class MainView extends VerticalLayout {
             }
         });
         pageBottom.add(urlField, addNew);
-        Button logout = new Button("Выйти", VaadinIcon.EXIT_O.create());
-        logout.addClickListener(event ->
-                logout.getUI().ifPresent(ui -> {
-                    SecurityContextHolder.clearContext();
-                    VaadinSession.getCurrent().close();
-                    ui.getSession().close();
-                    ui.navigate("login/logout");// to redirect user to the login page
-                }));
-        pageBottom.add(logout);
-
-        if (SecurityContextUtils.hasRole(RoleType.ROLE_ADMIN)) {
-            Button addUser = new Button("Add user", VaadinIcon.USER.create());
-            addUser.addClickListener(event ->
-                    Notification.show("Add user clicked",
-                            2000, Notification.Position.BOTTOM_CENTER));
-            pageBottom.add(addUser);
-        }
+        Button account = new Button("Профиль", VaadinIcon.COG_O.create());
+        account.addClickListener(event -> account.getUI().ifPresent(
+                ui -> ui.navigate(AccountView.class)));
+        pageBottom.add(account);
         pageBottom.setVerticalComponentAlignment(Alignment.BASELINE,
-                urlField, addNew, logout);
+                urlField, addNew, account);
         add(pageBottom);
     }
 }

@@ -35,9 +35,8 @@ public class JMovieApplication {
 	public CommandLineRunner createData(MovieService service){
 		return (args) -> {
 		    UserData user = UserConverter.convertToUserDTO(
-		            service.createUser("user", RoleType.ROLE_ADMIN));
+		            service.createUser("admin", RoleType.ROLE_ADMIN));
 		    service.updateUserPwd(user.getId(), passwordEncoder.encode("pass"));
-		    log.info("User created: " + service.getUserByName(user.getName()).getId());
 
             try (ZipFile content = new ZipFile("./src/main/Resources/content",
                     Charset.forName("cp866"))) {
