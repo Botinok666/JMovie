@@ -233,20 +233,8 @@ public class ConvertersTest {
                 8.648f, 8.8f);
         final Person director = new Person(12, "Bradley Cooper");
         final Person screenwriter = new Person(12, "Bradley Cooper");
-//        final List<Country> countries = Arrays.asList(
-//                new Country((short)13, "Malaysia"),
-//                new Country((short)66, "Mexico"));
-//        final List<Person> actors = Arrays.asList(
-//                new Person(14, "Hillary Swank"),
-//                new Person(67, "Michael Shannon"));
-//        final List<Genre> genres = Arrays.asList(
-//                new Genre((short)15, "Comedy"),
-//                new Genre((short)68, "Noir"));
         entity.setDirector(director);
         entity.setScreenwriter(screenwriter);
-//        countries.forEach(entity::addCountry);
-//        genres.forEach(entity::addGenre);
-//        actors.forEach(entity::addActor);
 
         final MovieDomain domain = MovieConverter.convertToMovieDomain(entity);
         //Проверим объект domain
@@ -256,21 +244,12 @@ public class ConvertersTest {
         assertEquals(entity.getOriginalTitle(), domain.getOriginalTitle());
         assertEquals(entity.getPosterLink(), domain.getPosterLink());
         assertEquals(entity.getYear(), domain.getYear());
-//        assertNotNull(domain.getCountries());
-//        assertEquals(2, domain.getCountries().size());
-//        assertEquals(countries.get(1).getId(), domain.getCountries().get(1).getId());
         assertNotNull(domain.getDirector());
         assertEquals(director.getId(), domain.getDirector().getId());
         assertNotNull(domain.getScreenwriter());
         assertEquals(screenwriter.getId(), domain.getScreenwriter().getId());
         assertEquals(entity.getTagLine(), domain.getTagLine());
-//        assertNotNull(domain.getGenres());
-//        assertEquals(2, domain.getGenres().size());
-//        assertEquals(genres.get(1).getId(), domain.getGenres().get(1).getId());
         assertEquals(entity.getRuntime(), domain.getRuntime());
-//        assertNotNull(domain.getActors());
-//        assertEquals(2, domain.getActors().size());
-//        assertEquals(actors.get(1).getId(), domain.getActors().get(1).getId());
         assertEquals(entity.getStoryline(), domain.getStoryline());
         assertEquals(entity.getRatingKP(), domain.getRatingKP(), .0);
         assertEquals(entity.getRatingIMDB(), domain.getRatingIMDB(), .0);
@@ -283,21 +262,12 @@ public class ConvertersTest {
         assertEquals(entity.getOriginalTitle(), data.getOriginalTitle());
         assertEquals(entity.getPosterLink(), data.getPosterLink());
         assertEquals(entity.getYear(), data.getYear());
-//        assertNotNull(data.getCountries());
-//        assertEquals(2, data.getCountries().size());
-//        assertEquals(countries.get(1).getId(), data.getCountries().get(1).getId());
         assertNotNull(data.getDirector());
         assertEquals(director.getId(), data.getDirector().getId());
         assertNotNull(domain.getScreenwriter());
         assertEquals(screenwriter.getId(), data.getScreenwriter().getId());
         assertEquals(entity.getTagLine(), data.getTagLine());
-//        assertNotNull(data.getGenres());
-//        assertEquals(2, data.getGenres().size());
-//        assertEquals(genres.get(1).getId(), data.getGenres().get(1).getId());
         assertEquals(entity.getRuntime(), data.getRuntime());
-//        assertNotNull(data.getActors());
-//        assertEquals(2, data.getActors().size());
-//        assertEquals(actors.get(1).getId(), data.getActors().get(1).getId());
         assertEquals(entity.getStoryline(), data.getStoryline());
         assertEquals(entity.getRatingKP(), data.getRatingKP(), .0);
         assertEquals(entity.getRatingIMDB(), data.getRatingIMDB(), .0);

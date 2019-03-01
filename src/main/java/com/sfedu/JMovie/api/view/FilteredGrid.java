@@ -48,24 +48,24 @@ public class FilteredGrid extends VerticalLayout {
         this.service = movieService;
         hasNext = new BoolW(false);
         currentPage = 0;
-
-        TextField byText = new TextField("Название");
+        //Для фильтрации по названию или сюжету
+        final TextField byText = new TextField("Название");
         byText.setVisible(false);
-
-        TextField byYearStarts = new TextField("От");
+        //Для фильтрации по временному промежутку
+        final TextField byYearStarts = new TextField("От");
         byYearStarts.setValue("1900");
         byYearStarts.setVisible(false);
-        TextField byYearEnds = new TextField("до");
+        final TextField byYearEnds = new TextField("до");
         byYearEnds.setValue(String.valueOf(LocalDate.now().getYear()));
         byYearEnds.setVisible(false);
-
-        ComboBox<CountryData> byCountry = new ComboBox<>("Страна");
+        //Для фильтрации по стране
+        final ComboBox<CountryData> byCountry = new ComboBox<>("Страна");
         byCountry.setItemLabelGenerator(CountryData::getName);
         byCountry.setAllowCustomValue(false);
         byCountry.setItems(Collections.emptyList());
         byCountry.setVisible(false);
-
-        ComboBox<PersonData> byPerson = new ComboBox<>("Режиссёр");
+        //Для фильтрации по режиссёру или актёру
+        final ComboBox<PersonData> byPerson = new ComboBox<>("Режиссёр");
         byPerson.setItemLabelGenerator(PersonData::getName);
         byPerson.setItems(Collections.emptyList());
         byPerson.addCustomValueSetListener(event ->
@@ -73,17 +73,17 @@ public class FilteredGrid extends VerticalLayout {
                     service.getPersonListByNameContains(event.getDetail())
         )));
         byPerson.setVisible(false);
-
-        ComboBox<GenreData> byGenre = new ComboBox<>("Жанр");
+        //Для фильтрации по жанру
+        final ComboBox<GenreData> byGenre = new ComboBox<>("Жанр");
         byGenre.setItemLabelGenerator(GenreData::getName);
         byGenre.setItems(Collections.emptyList());
         byGenre.setAllowCustomValue(false);
         byGenre.setVisible(false);
 
-        Button search = new Button("Найти", VaadinIcon.FILTER.create());
+        final Button search = new Button("Найти", VaadinIcon.FILTER.create());
         search.setEnabled(false);
-
-        ComboBox<String> filterBy = new ComboBox<>("Фильтр по");
+        //Список доступных фильтров
+        final ComboBox<String> filterBy = new ComboBox<>("Фильтр по");
         filterBy.setItems("<нет>", "названию", "году", "стране", "режиссёру",
                 "жанру", "актёру", "сюжету", "просмотрам");
         filterBy.setValue("<нет>");
@@ -133,7 +133,7 @@ public class FilteredGrid extends VerticalLayout {
             }
             search.setEnabled(true);
         });
-        Grid<MovieData> movieGrid = new Grid<>(MovieData.class, false);
+        final Grid<MovieData> movieGrid = new Grid<>(MovieData.class, false);
         search.addClickListener(event -> {
             currentPage = 0;
             left.setEnabled(false);
@@ -152,12 +152,14 @@ public class FilteredGrid extends VerticalLayout {
                             )));
                     break;
                 case "году":
+                    //Проверим, правильные ли числа ввёл пользователь
                     try {
                         start = Short.parseShort(byYearStarts.getValue());
                         end = Short.parseShort(byYearEnds.getValue());
                     } catch (Exception e) {
                         return;
                     }
+                    //Проверим порядок
                     if (start >= end)
                         return;
                     setPageHandler(() -> movieGrid.setItems(
@@ -168,6 +170,7 @@ public class FilteredGrid extends VerticalLayout {
                     break;
                 case "стране":
                     setPageHandler(() -> {
+                        //Если пользователь ещё не выбрал ничего из списка
                         if (byCountry.getValue() == null)
                             return;
                         movieGrid.setItems(
@@ -179,6 +182,7 @@ public class FilteredGrid extends VerticalLayout {
                     break;
                 case "режиссёру":
                     setPageHandler(() -> {
+                        //Если пользователь ещё не выбрал ничего из списка
                         if (byPerson.getValue() == null)
                             return;
                         movieGrid.setItems(
@@ -190,6 +194,7 @@ public class FilteredGrid extends VerticalLayout {
                     break;
                 case "жанру":
                     setPageHandler(() -> {
+                        //Если пользователь ещё не выбрал ничего из списка
                         if (byGenre.getValue() == null)
                             return;
                         movieGrid.setItems(
@@ -201,6 +206,7 @@ public class FilteredGrid extends VerticalLayout {
                     break;
                 case "актёру":
                     setPageHandler(() ->{
+                        //Если пользователь ещё не выбрал ничего из списка
                         if (byPerson.getValue() == null)
                             return;
                         movieGrid.setItems(
@@ -228,10 +234,13 @@ public class FilteredGrid extends VerticalLayout {
                             )));
                     break;
             }
+            //Вызовем сразу обработчик, чтобы заполнить первую страницу
             pageHandler.onChange();
+            //Кнопка "вправо" будет активна, если есть следующая страница
+            //Это можно определить после выполнения предыдущей строки кода
             right.setEnabled(hasNext.getValue());
         });
-        HorizontalLayout actions = new HorizontalLayout(filterBy,
+        final HorizontalLayout actions = new HorizontalLayout(filterBy,
                 byText, byYearStarts, byYearEnds, byCountry, byPerson, byGenre, search);
         actions.setVerticalComponentAlignment(Alignment.BASELINE, filterBy,
                 byText, byYearStarts, byYearEnds, byCountry, byPerson, byGenre, search);
@@ -243,8 +252,8 @@ public class FilteredGrid extends VerticalLayout {
                         service.getAllMovies(currentPage, hasNext)
                 )));
         pageHandler.onChange();
-        movieGrid.addColumn(MovieData::getOriginalTitle).setHeader("Название").setFlexGrow(5);
-        movieGrid.addColumn(MovieData::getLocalizedTitle).setHeader("Локализация").setFlexGrow(5);
+        movieGrid.addColumn(MovieData::getOriginalTitle).setHeader("Название").setFlexGrow(6);
+        movieGrid.addColumn(MovieData::getLocalizedTitle).setHeader("Локализация").setFlexGrow(6);
         movieGrid.addColumn(MovieData::getYear).setHeader("Год").setFlexGrow(1);
         movieGrid.addColumn(movieData -> movieData.getDirector().getName()).setHeader("Режиссёр").setFlexGrow(4);
         movieGrid.addColumn(MovieData::getRatingIMDB).setHeader("IMDB").setFlexGrow(1);
@@ -252,7 +261,8 @@ public class FilteredGrid extends VerticalLayout {
                 movieGrid.getUI().ifPresent(ui ->
                         ui.navigate(String.format("movie/%d", event.getItem().getId()))));
         add(movieGrid);
-
+        //Кнопки для навигации между страницами с результатами
+        //Определяется, можно ли двигаться влево/вправо
         left = new Button(VaadinIcon.ARROW_LEFT.create());
         left.setEnabled(false);
         left.addClickListener(event -> {
@@ -269,7 +279,7 @@ public class FilteredGrid extends VerticalLayout {
             left.setEnabled(currentPage > 0);
             right.setEnabled(hasNext.getValue());
         });
-        HorizontalLayout navigation = new HorizontalLayout(left, right);
+        final HorizontalLayout navigation = new HorizontalLayout(left, right);
         add(navigation);
         setHorizontalComponentAlignment(Alignment.CENTER, navigation);
     }

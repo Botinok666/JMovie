@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
@@ -24,6 +26,8 @@ public class DBTest {
     private ViewingRepository viewingRepository;
     private MovieRepository movieRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     public void setCountryRepository(CountryRepository countryRepository){
         this.countryRepository = countryRepository;
@@ -48,6 +52,7 @@ public class DBTest {
     public void setMovieRepository(MovieRepository movieRepository){
         this.movieRepository = movieRepository;
     }
+
 
     //Сохранение одного жанра
     @Test
@@ -94,11 +99,14 @@ public class DBTest {
         assertEquals(id, saved.getId());
         assertEquals(name, saved.getName());
         //Получаем его же по ID из репозитория
-        Optional<Person> selectedOpt = personRepository.findById(saved.getId());
+        Optional<Person> selectedOpt = personRepository
+                .findById(saved.getId());
         assertTrue(selectedOpt.isPresent());
         final Person selected = selectedOpt.get();
         assertEquals(id, selected.getId());
         assertEquals(name, selected.getName());
+        assertEquals(1, personRepository
+                .findTop10ByNameContainingIgnoreCase("tes").size());
     }
     //Сохранение одного пользователя, затем обновление его данных
     @Test
@@ -359,19 +367,25 @@ public class DBTest {
 
         //Проверяем режиссёра
         assertEquals(1, movieRepository
-                .findByDirectorId(director2.getId()).size());
+                .findByDirectorId(director2.getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(0, movieRepository
-                .findByScreenwriterId(director2.getId()).size());
+                .findByScreenwriterId(director2.getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(0, movieRepository
-                .findByActorsId(director2.getId()).size());
+                .findByActorsId(director2.getId(), PageRequest.of(0, 10))
+                .getContent().size());
 
         //Проверяем сценариста, он же актёр из первого и второго фильмов
         assertEquals(0, movieRepository
-                .findByDirectorId(screenwriter2.getId()).size());
+                .findByDirectorId(screenwriter2.getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(1, movieRepository
-                .findByScreenwriterId(screenwriter2.getId()).size());
+                .findByScreenwriterId(screenwriter2.getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(2, movieRepository
-                .findByActorsId(screenwriter2.getId()).size());
+                .findByActorsId(screenwriter2.getId(), PageRequest.of(0, 10))
+                .getContent().size());
 
         //Проверяем актёров из первого и второго фильмов
         assertEquals(2, movieRepository
@@ -381,25 +395,34 @@ public class DBTest {
         assertEquals(3, updatedMovie2.getActors().size());
         //Актёр-0 снимался в 2 фильмах
         assertEquals(0, movieRepository
-                .findByDirectorId(actors2.get(0).getId()).size());
+                .findByDirectorId(actors2.get(0).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(0, movieRepository
-                .findByScreenwriterId(actors2.get(0).getId()).size());
+                .findByScreenwriterId(actors2.get(0).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(2, movieRepository
-                .findByActorsId(actors2.get(0).getId()).size());
+                .findByActorsId(actors2.get(0).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         //Актёр-1 снимался в 2 фильмах и был режиссёром
         assertEquals(0, movieRepository
-                .findByDirectorId(actors2.get(1).getId()).size());
+                .findByDirectorId(actors2.get(1).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(1, movieRepository
-                .findByScreenwriterId(actors2.get(1).getId()).size());
+                .findByScreenwriterId(actors2.get(1).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(2, movieRepository
-                .findByActorsId(actors2.get(1).getId()).size());
+                .findByActorsId(actors2.get(1).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         //Актёр-2 снимался в 1 фильме
         assertEquals(0, movieRepository
-                .findByDirectorId(actors2.get(2).getId()).size());
+                .findByDirectorId(actors2.get(2).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(0, movieRepository
-                .findByScreenwriterId(actors2.get(2).getId()).size());
+                .findByScreenwriterId(actors2.get(2).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(1, movieRepository
-                .findByActorsId(actors2.get(2).getId()).size());
+                .findByActorsId(actors2.get(2).getId(), PageRequest.of(0, 10))
+                .getContent().size());
 
         //Проверяем жанры
         assertEquals(3, movieRepository
@@ -409,12 +432,15 @@ public class DBTest {
         assertEquals(1, updatedMovie2.getGenres().size());
         //Жанр из второго фильма был и в первом
         assertEquals(2, movieRepository
-                .findByGenresId(genres2.get(0).getId()).size());
+                .findByGenresId(genres2.get(0).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         //Два жанра из первого были только в нём
         assertEquals(1, movieRepository
-                .findByGenresId(genres1.get(0).getId()).size());
+                .findByGenresId(genres1.get(0).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(1, movieRepository
-                .findByGenresId(genres1.get(1).getId()).size());
+                .findByGenresId(genres1.get(1).getId(), PageRequest.of(0, 10))
+                .getContent().size());
 
         //Проверяем страны
         assertEquals(1, movieRepository
@@ -424,10 +450,26 @@ public class DBTest {
         assertEquals(2, updatedMovie2.getCountries().size());
         //Первая страна появилась только во втором фильме
         assertEquals(1, movieRepository
-                .findByCountriesId(countries2.get(0).getId()).size());
+                .findByCountriesId(countries2.get(0).getId(), PageRequest.of(0, 10))
+                .getContent().size());
         //Вторая фигурировала в двух фильмах
         assertEquals(2, movieRepository
-                .findByCountriesId(countries2.get(1).getId()).size());
+                .findByCountriesId(countries2.get(1).getId(), PageRequest.of(0, 10))
+                .getContent().size());
+
+        //Проверяем списки фильмов
+        assertEquals(2, movieRepository
+                .findByLocalizedTitleContainingOrOriginalTitleContainingAllIgnoreCase(
+                        "Тес", "Тес", PageRequest.of(0, 10))
+                .getContent().size());
+        assertEquals(2, movieRepository
+                .findByStorylineContainingIgnoreCase(
+                        "Story", PageRequest.of(0, 10))
+                .getContent().size());
+        assertEquals(2, movieRepository
+                .findByYearBetween(
+                        (short)1998, (short)2000, PageRequest.of(0, 10))
+                .getContent().size());
     }
     //Сохранение 4 просмотров, задействовано 2 фильма и 2 пользователя
     @Test
@@ -506,14 +548,16 @@ public class DBTest {
         //Проверим просмотры
         assertEquals(4, viewingRepository.findAll().size());
         //Просмотры фильмов
-        assertEquals(3, viewingRepository
-                .findByMovieId(movie1.getId()).size());
+        assertEquals(2, viewingRepository
+                .findByMovieIdAndUserId(movie1.getId(), user1.getId()).size());
         assertEquals(1, viewingRepository
-                .findByMovieId(movie2.getId()).size());
+                .findByMovieIdAndUserId(movie2.getId(), user1.getId()).size());
         //Просмотры пользователей
         assertEquals(3, viewingRepository
-                .findByUserId(user1.getId()).size());
+                .findByUserId(user1.getId(), PageRequest.of(0, 10))
+                .getContent().size());
         assertEquals(1, viewingRepository
-                .findByUserId(user2.getId()).size());
+                .findByUserId(user2.getId(), PageRequest.of(0, 10))
+                .getContent().size());
     }
 }

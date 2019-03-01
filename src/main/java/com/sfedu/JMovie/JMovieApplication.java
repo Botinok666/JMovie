@@ -3,6 +3,7 @@ package com.sfedu.JMovie;
 import com.sfedu.JMovie.api.data.*;
 import com.sfedu.JMovie.api.util.KinoPoiskParser;
 import com.sfedu.JMovie.db.RoleType;
+import com.sfedu.JMovie.domain.service.IMovieService;
 import com.sfedu.JMovie.domain.service.MovieService;
 import com.sfedu.JMovie.domain.util.UserConverter;
 import org.slf4j.Logger;
@@ -32,12 +33,13 @@ public class JMovieApplication {
 	}
 
 	@Bean
-	public CommandLineRunner createData(MovieService service){
+	public CommandLineRunner createData(IMovieService service){
 		return (args) -> {
+		    //Создадим одного пользователя - админа
 		    UserData user = UserConverter.convertToUserDTO(
 		            service.createUser("admin", RoleType.ROLE_ADMIN));
 		    service.updateUserPwd(user.getId(), passwordEncoder.encode("pass"));
-
+            //Добавим все фильмы из zip файла
             try (ZipFile content = new ZipFile("./src/main/Resources/content",
                     Charset.forName("cp866"))) {
                 Enumeration<? extends ZipEntry> entries = content.entries();
@@ -60,7 +62,7 @@ public class JMovieApplication {
             catch (IOException e){
                 log.info("Error opening content.zip");
             }
-
+            //Выведем количество стран и жанров
             log.info("Countries: " + service.getAllCountries().size());
             log.info("Genres: " + service.getAllGenres().size());
 		};

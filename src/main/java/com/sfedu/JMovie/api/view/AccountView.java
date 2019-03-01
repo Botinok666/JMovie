@@ -46,11 +46,16 @@ public class AccountView extends VerticalLayout
             addUser.addClickListener(event ->
                 name.getOptionalValue().ifPresent(value -> {
                         if (value.length() > 1) {
-                            UserDomain user = service.createUser(value, RoleType.ROLE_USER);
-                            service.updateUserPwd(user.getId(),
-                                    passwordEncoder.encode(""));
-                            Notification.show("Пользователь добавлен",
-                                    2000, Notification.Position.BOTTOM_CENTER);
+                            try {
+                                UserDomain user = service.createUser(value, RoleType.ROLE_USER);
+                                service.updateUserPwd(user.getId(),
+                                        passwordEncoder.encode(""));
+                                Notification.show("Пользователь добавлен",
+                                        2000, Notification.Position.BOTTOM_CENTER);
+                            } catch (IllegalArgumentException e) {
+                                Notification.show(e.getMessage(),
+                                        2000, Notification.Position.BOTTOM_CENTER);
+                            }
                         } else {
                             Notification.show("Слишком короткий логин",
                                     2000, Notification.Position.BOTTOM_CENTER);

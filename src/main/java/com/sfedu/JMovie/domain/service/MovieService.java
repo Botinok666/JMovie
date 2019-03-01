@@ -152,12 +152,14 @@ public class MovieService implements IMovieService {
                 personRepository.findTop10ByNameContainingIgnoreCase(name));
     }
     @Override
-    public UserDomain createUser(String name, RoleType role){
+    public UserDomain createUser(String name, RoleType role) throws IllegalArgumentException{
+        if (userRepository.findByName(name) != null)
+            throw new IllegalArgumentException("User " + name + " already exists!");
         return UserConverter.convertToUserDomain(userRepository
                 .save(new User(name, "", role)));
     }
     @Override
-    public UserDomain updateUserPwd(Short id, String pwd){
+    public UserDomain updateUserPwd(Short id, String pwd) throws NoSuchElementException{
         User user = userRepository
                 .findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No such user"));

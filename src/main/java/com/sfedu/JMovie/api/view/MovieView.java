@@ -16,19 +16,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
-import org.springframework.security.core.context.SecurityContext;
+import javafx.util.Pair;
 
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Route
 public class MovieView extends VerticalLayout implements HasUrlParameter<String> {
@@ -42,9 +39,11 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
     private void fill(){
         final MovieData movie;
         boolean isNew = false;
+        //Если фильм есть в БД, берём оттуда
         if (service.isMovieExists(movieId)) {
             movie = MovieConverter.convertToMovieDTO(service.getMovieById(movieId));
         } else {
+            //Иначе пытаемся получить данные из интернета
             try {
                 movie = KinoPoiskParser.parseURL(
                         new URL("https://www.kinopoisk.ru/film/" + movieId));
@@ -58,7 +57,7 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
                 return;
             }
         }
-
+        //Название, если есть только в одном варианте, выводится без слэша
         final Label movieTitle = new Label(
                 movie.getLocalizedTitle().isEmpty() || movie.getOriginalTitle().isEmpty() ?
                         movie.getOriginalTitle() + movie.getLocalizedTitle() :
@@ -66,55 +65,59 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
         );
         movieTitle.getStyle().set("font-family", "helvetica");
         movieTitle.getStyle().set("font-size", "24pt");
+        //Если фильм взят из БД, заполним все списки (по умолчанию они пустые)
         if (!isNew)
             service.addMissingListsToMovie(movie);
-        final List<StringPair> movieData = new ArrayList<>();
-        movieData.add(new StringPair("Год:", String.valueOf(movie.getYear())));
-        movieData.add(new StringPair("Страна:", movie.getCountries()
+        //Массив для представления всех характеристик фильма
+        final List<Pair<String, String>> movieData = new ArrayList<>();
+        movieData.add(new Pair<>("Год:", String.valueOf(movie.getYear())));
+        movieData.add(new Pair<>("Страна:", movie.getCountries()
                         .stream()
                         .map(CountryData::getName)
                         .collect(Collectors.joining(", "))));
-        movieData.add(new StringPair("Режиссёр:", movie.getDirector().getName()));
-        movieData.add(new StringPair("Сценарий:", movie.getScreenwriter().getName()));
-        movieData.add(new StringPair("Слоган:", movie.getTagLine()));
-        movieData.add(new StringPair("Жанр:", movie.getGenres()
+        movieData.add(new Pair<>("Режиссёр:", movie.getDirector().getName()));
+        movieData.add(new Pair<>("Сценарий:", movie.getScreenwriter().getName()));
+        movieData.add(new Pair<>("Слоган:", movie.getTagLine()));
+        movieData.add(new Pair<>("Жанр:", movie.getGenres()
                         .stream()
                         .map(GenreData::getName)
                         .collect(Collectors.joining(", "))));
-        movieData.add(new StringPair("Продолжительность:", LocalTime.MIN
+        movieData.add(new Pair<>("Продолжительность:", LocalTime.MIN
                         .plusMinutes(movie.getRuntime())
                         .toString()));
-        movieData.add(new StringPair("В главных ролях:", movie.getActors()
+        movieData.add(new Pair<>("В главных ролях:", movie.getActors()
                         .stream()
                         .map(PersonData::getName)
                         .collect(Collectors.joining(", "))));
-        movieData.add(new StringPair("Сюжет:", movie.getStoryline()));
-        movieData.add(new StringPair("Рейтинг KP:", String.valueOf(movie.getRatingKP())));
-        movieData.add(new StringPair("Рейтинг IMDB:", String.valueOf(movie.getRatingIMDB())));
-        //Добавим на страницу данные о просмотрах, если они были
+        movieData.add(new Pair<>("Сюжет:", movie.getStoryline()));
+        movieData.add(new Pair<>("Рейтинг KP:", String.valueOf(movie.getRatingKP())));
+        movieData.add(new Pair<>("Рейтинг IMDB:", String.valueOf(movie.getRatingIMDB())));
+        //Добавим данные о просмотрах, если они были
         if (!isNew && SecurityContextUtils.getUser() != null) {
             final List<ViewingData> viewings = ViewingConverter.convertToViewingListDTO(
                     service.getViewingsByMovieAndUserId(
                             movieId, SecurityContextUtils.getUser().getId())
             );
             if (viewings.size() > 0)
-                movieData.add(new StringPair("Просмотры: ", viewings
+                movieData.add(new Pair<>("Просмотры: ", viewings
                         .stream()
                         .map(viewingData -> String.format("%s (%.1f)",
                                 viewingData.getDate().toString(), viewingData.getRatingUser()))
                         .collect(Collectors.joining(", "))));
         }
-        //Создадим вертикальный контейнер, который заполним горизонтальными с данными
+        //Создадим вертикальный контейнер для отображения характеристик
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         layout.setPadding(false);
         layout.getStyle().set("font-size", "10pt");
+        //Преобразуем все характеристики в горизонтальные контейнеры
+        //Тогда характеристики будут представлены в виде двух столбцов
         movieData.stream()
                 .map(p -> {
-                    Label left = new Label(p.getA());
+                    Label left = new Label(p.getKey());
                     left.setWidth("25%");
                     left.getStyle().set("text-align", "right");
-                    Label right = new Label(p.getB());
+                    Label right = new Label(p.getValue());
                     right.setWidth("75%");
                     right.getStyle().set("white-space", "normal");
                     HorizontalLayout horizontalLayout = new HorizontalLayout(left, right);
@@ -133,8 +136,10 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
         posterAndInfo.setSizeFull();
         //Контейнер для действий с фильмом
         final HorizontalLayout actions = new HorizontalLayout();
+        //Инструмент для выбора даты
         final DatePicker datePicker = new DatePicker();
         datePicker.setVisible(!isNew);
+        //Поле для ввода пользовательского рейтинга
         final TextField rating = new TextField("Рейтинг");
         rating.setVisible(!isNew);
         rating.setValue("5.0");
@@ -173,6 +178,7 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
                 }
             })
         );
+        //Если фильм взят из интернета, нужно его сначала сохранить в БД
         final Button save = new Button("Сохранить", VaadinIcon.DISC.create());
         save.setVisible(isNew);
         save.addClickListener(event -> {
@@ -208,30 +214,5 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
             }
         }
         fill();
-    }
-
-    public static class StringPair {
-        private String a;
-        private String b;
-        public StringPair(String A, String B){
-            this.setA(A);
-            this.setB(B);
-        }
-
-        public String getA() {
-            return a;
-        }
-
-        public String getB() {
-            return b;
-        }
-
-        public void setA(String a) {
-            this.a = a;
-        }
-
-        public void setB(String b) {
-            this.b = b;
-        }
     }
 }

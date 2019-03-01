@@ -70,15 +70,16 @@ public class LoginView extends VerticalLayout
     public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
         if (parameter != null && parameter.contentEquals("logout")) {
             Notification.show("You have been successfully logged out",
-                    5000, Notification.Position.MIDDLE);
+                    3000, Notification.Position.MIDDLE);
         }
     }
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        //Если на страницу login пытается зайти авторизованный пользователь
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        //Anonymous Authentication is enabled in our Spring Security conf
-        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            //https://vaadin.com/docs/flow/routing/tutorial-routing-lifecycle.html
+        if (auth != null && auth.isAuthenticated() &&
+                !(auth instanceof AnonymousAuthenticationToken)) {
+            //Перенаправим его на главную
             beforeEnterEvent.rerouteTo(MainView.class);
         }
     }

@@ -15,31 +15,34 @@ import java.net.URL;
 public class MainView extends VerticalLayout {
 
     public MainView(FilteredGrid filteredGrid){
+        //Добавим основную таблицу с фильтрами и навигацией
         add(filteredGrid);
-
-        HorizontalLayout pageBottom = new HorizontalLayout();
-        TextField urlField = new TextField("Фильм на kinopoisk");
+        final HorizontalLayout pageBottom = new HorizontalLayout();
+        //Поле для ввода URL фильма и кнопка добавления
+        final TextField urlField = new TextField("Фильм на kinopoisk");
         urlField.setPlaceholder("Введите URL фильма");
-        Button addNew = new Button("Добавить фильм", VaadinIcon.PLUS_CIRCLE.create());
+        final Button addNew = new Button("Добавить фильм",
+                VaadinIcon.PLUS_CIRCLE.create());
         addNew.addClickListener(event -> {
             try {
-                URL url = new URL(urlField.getValue());
+                final URL url = new URL(urlField.getValue());
                 if (!url.getHost().equals("www.kinopoisk.ru"))
                     throw new MalformedURLException("Поддерживается только kinopoisk.ru");
-                String[] path = url.getPath().split("/");
-                Integer movieId = Integer.parseInt(path[path.length - 1]);
+                final String[] path = url.getPath().split("/");
+                final Integer movieId = Integer.parseInt(path[path.length - 1]);
                 urlField.getUI().ifPresent(ui ->
                         ui.navigate(String.format("movie/%d", movieId)));
             } catch (MalformedURLException e) {
                 Notification.show("Неверный адрес. " + e.getMessage(),
                         2000, Notification.Position.BOTTOM_START);
             } catch (NumberFormatException e) {
-                Notification.show("Введите прямую ссылку на фильм",
+                Notification.show("Пожалуйста, введите прямую ссылку на фильм",
                         2000, Notification.Position.BOTTOM_START);
             }
         });
         pageBottom.add(urlField, addNew);
-        Button account = new Button("Профиль", VaadinIcon.COG_O.create());
+        //Также с главной страницы можно перейти в профиль
+        final Button account = new Button("Профиль", VaadinIcon.COG_O.create());
         account.addClickListener(event -> account.getUI().ifPresent(
                 ui -> ui.navigate(AccountView.class)));
         pageBottom.add(account);

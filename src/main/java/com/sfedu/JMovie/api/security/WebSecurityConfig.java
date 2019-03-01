@@ -36,7 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable() // CSRF is handled by Vaadin: https://vaadin.com/framework/security
                 .exceptionHandling().accessDeniedPage("/accessDenied")
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-                .and().logout().logoutSuccessUrl("/login?logout")
+                .and().logout().logoutSuccessUrl("/login/logout")
                 .and()
                 .authorizeRequests()
                 // allow Vaadin URLs and the login URL without authentication

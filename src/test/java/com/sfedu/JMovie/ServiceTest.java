@@ -7,6 +7,7 @@ import com.sfedu.JMovie.api.data.PersonData;
 import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
+import com.sfedu.JMovie.domain.BoolW;
 import com.sfedu.JMovie.domain.model.*;
 import com.sfedu.JMovie.domain.service.IMovieService;
 import com.sfedu.JMovie.domain.service.MovieService;
@@ -18,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
@@ -97,25 +96,37 @@ public class ServiceTest {
             genres.forEach(m::addGenre);
             actors.forEach(m::addActor);
         });
+        Slice<Movie> moviesSlice = new SliceImpl<>(movies);
         Page<Movie> moviesPage = new PageImpl<>(movies);
         Mockito.when(movieRepository
                 .findAll(Mockito.any(PageRequest.class)))
                 .thenReturn(moviesPage);
-        Mockito.when(movieRepository.findById(13)).thenReturn(Optional.of(movies.get(0)));
-        Mockito.when(movieRepository.findByLocalizedTitleContainingOrOriginalTitleContainingAllIgnoreCase("Фильм"))
-                .thenReturn(movies);
-        Mockito.when(movieRepository.findByStorylineContainingIgnoreCase("Story"))
-                .thenReturn(movies);
-        Mockito.when(movieRepository.findByGenresId((short)1))
-                .thenReturn(movies);
-        Mockito.when(movieRepository.findByDirectorId(1))
-                .thenReturn(movies);
-        Mockito.when(movieRepository.findByScreenwriterId(1))
-                .thenReturn(movies);
-        Mockito.when(movieRepository.findByCountriesId((short)1))
-                .thenReturn(movies);
-        Mockito.when(movieRepository.findByActorsId(1))
-                .thenReturn(movies);
+        Mockito.when(movieRepository
+                .findById(13))
+                .thenReturn(Optional.of(movies.get(0)));
+        Mockito.when(movieRepository
+                .existsById(13))
+                .thenReturn(true);
+        Mockito.when(movieRepository
+                .findByLocalizedTitleContainingOrOriginalTitleContainingAllIgnoreCase(
+                        "Фильм", "Фильм", Mockito.any(PageRequest.class)))
+                .thenReturn(moviesSlice);
+        Mockito.when(movieRepository
+                .findByStorylineContainingIgnoreCase("Story", Mockito.any(PageRequest.class)))
+                .thenReturn(moviesSlice);
+        Mockito.when(movieRepository
+                .findByGenresId((short)1, Mockito.any(PageRequest.class)))
+                .thenReturn(moviesSlice);
+        Mockito.when(movieRepository
+                .findByDirectorId(1, Mockito.any(PageRequest.class)))
+                .thenReturn(moviesSlice);
+        Mockito.when(movieRepository
+                .findByScreenwriterId(1, Mockito.any(PageRequest.class)))
+                .thenReturn(moviesSlice);
+        Mockito.when(movieRepository.findByCountriesId((short)1, Mockito.any(PageRequest.class)))
+                .thenReturn(moviesSlice);
+        Mockito.when(movieRepository.findByActorsId(1, Mockito.any(PageRequest.class)))
+                .thenReturn(moviesSlice);
         Mockito.when(movieRepository.save(Mockito.any(Movie.class)))
                 .thenReturn(movies.get(0));
 
@@ -151,19 +162,20 @@ public class ServiceTest {
     }
     @Test
     public void testGetTenMoviesPaged(){
-        final List<MovieDomain> movies = movieService.getAllMovies(0);
+        final BoolW hasNext = new BoolW(false);
+        final List<MovieDomain> movies = movieService.getAllMovies(0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
         assertEquals("Tag1", movies.get(0).getTagLine());
         assertEquals("Tag2", movies.get(1).getTagLine());
+        assertFalse(hasNext.getValue());
     }
     @Test
-    public void testGetUserByName(){
-        final UserDomain user = movieService.getUserByName("Jack");
+    public void testIsMovieExists(){
+        final boolean exists = movieService.isMovieExists(13);
 
-        assertNotNull(user);
-        assertEquals("Jack", user.getName());
+        assertTrue(exists);
     }
     @Test
     public void testGetMovieById(){
@@ -174,70 +186,92 @@ public class ServiceTest {
     }
     @Test
     public void testGetMovieListByTitleContains(){
-        final List<MovieDomain> movies = movieService.getMovieListByTitleContains("Фильм");
+        final BoolW hasNext = new BoolW(false);
+        final List<MovieDomain> movies = movieService
+                .getMovieListByTitleContains("Фильм", 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
         assertEquals("Tag1", movies.get(0).getTagLine());
         assertEquals("Tag2", movies.get(1).getTagLine());
+        assertFalse(hasNext.getValue());
     }
     @Test
     public void testGetMovieListByStorylineContains(){
-        final List<MovieDomain> movies = movieService.getMovieListByStorylineContains("Story");
+        final BoolW hasNext = new BoolW(false);
+        final List<MovieDomain> movies = movieService
+                .getMovieListByStorylineContains("Story", 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
         assertEquals("Tag1", movies.get(0).getTagLine());
         assertEquals("Tag2", movies.get(1).getTagLine());
+        assertFalse(hasNext.getValue());
     }
     @Test
     public void testGetMovieListByGenreId(){
-        final List<MovieDomain> movies = movieService.getMovieListByGenreId((short)1);
+        final BoolW hasNext = new BoolW(false);
+        final List<MovieDomain> movies = movieService
+                .getMovieListByGenreId((short)1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
         assertEquals("Tag1", movies.get(0).getTagLine());
         assertEquals("Tag2", movies.get(1).getTagLine());
+        assertFalse(hasNext.getValue());
     }
     @Test
     public void testGetMovieListByDirectorId(){
-        final List<MovieDomain> movies = movieService.getMovieListByDirectorId(1);
+        final BoolW hasNext = new BoolW(false);
+        final List<MovieDomain> movies = movieService
+                .getMovieListByDirectorId(1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
         assertEquals("Tag1", movies.get(0).getTagLine());
         assertEquals("Tag2", movies.get(1).getTagLine());
+        assertFalse(hasNext.getValue());
     }
     @Test
-    public void testGetMovieListByScreenwriterId(){
-        final List<MovieDomain> movies = movieService.getMovieListByScreenwriterId(1);
+    public void testAddMissingListsToMovie(){
+        final MovieData movie = new MovieData(13, "Фильм1",
+                "Movie1", "http://imdb.com/1.jpg", (short)1999,
+                "Tag1", (short)139, "Storyline1",
+                8.8f, 8.869f);
+        movieService.addMissingListsToMovie(movie);
 
-        assertNotNull(movies);
-        assertEquals(2, movies.size());
-        assertEquals("Tag1", movies.get(0).getTagLine());
-        assertEquals("Tag2", movies.get(1).getTagLine());
+        assertEquals(2, movie.getActors().size());
+        assertEquals(2, movie.getGenres().size());
+        assertEquals(2, movie.getCountries().size());
     }
     @Test
     public void testGetMovieListByCountryId(){
-        final List<MovieDomain> movies = movieService.getMovieListByCountryId((short)1);
+        final BoolW hasNext = new BoolW(false);
+        final List<MovieDomain> movies = movieService
+                .getMovieListByCountryId((short)1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
         assertEquals("Tag1", movies.get(0).getTagLine());
         assertEquals("Tag2", movies.get(1).getTagLine());
+        assertFalse(hasNext.getValue());
     }
     @Test
     public void testGetMovieListByActorId(){
-        final List<MovieDomain> movies = movieService.getMovieListByActorId(1);
+        final BoolW hasNext = new BoolW(false);
+        final List<MovieDomain> movies = movieService
+                .getMovieListByActorId(1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
         assertEquals("Tag1", movies.get(0).getTagLine());
         assertEquals("Tag2", movies.get(1).getTagLine());
+        assertFalse(hasNext.getValue());
     }
     @Test
     public void testGetPersonListByNameContains(){
-        final List<PersonDomain> people = movieService.getPersonListByNameContains("Name");
+        final List<PersonDomain> people = movieService
+                .getPersonListByNameContains("Name");
 
         assertNotNull(people);
         assertEquals(2, people.size());
@@ -246,7 +280,8 @@ public class ServiceTest {
     }
     @Test
     public void testCreateUser(){
-        final UserDomain user = movieService.createUser("Jack", RoleType.ROLE_USER);
+        final UserDomain user = movieService
+                .createUser("Jack", RoleType.ROLE_USER);
 
         assertNotNull(user);
         assertEquals("Jack", user.getName());
@@ -254,7 +289,8 @@ public class ServiceTest {
     }
     @Test
     public void testUpdateUserPwd(){
-        final UserDomain user = movieService.updateUserPwd((short)12, "");
+        final UserDomain user = movieService
+                .updateUserPwd((short)12, "");
 
         assertNotNull(user);
         assertEquals("Jack", user.getName());
