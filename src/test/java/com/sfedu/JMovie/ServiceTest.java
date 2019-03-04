@@ -8,6 +8,7 @@ import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
 import com.sfedu.JMovie.domain.BoolW;
+import com.sfedu.JMovie.domain.GetOptions;
 import com.sfedu.JMovie.domain.model.*;
 import com.sfedu.JMovie.domain.service.IMovieService;
 import com.sfedu.JMovie.domain.service.MovieService;
@@ -99,7 +100,7 @@ public class ServiceTest {
         Slice<Movie> moviesSlice = new SliceImpl<>(movies);
         Page<Movie> moviesPage = new PageImpl<>(movies);
         Mockito.when(movieRepository
-                .findAll(Mockito.any(PageRequest.class)))
+                .findAll(PageRequest.of(0, 10)))
                 .thenReturn(moviesPage);
         Mockito.when(movieRepository
                 .findById(13))
@@ -109,23 +110,23 @@ public class ServiceTest {
                 .thenReturn(true);
         Mockito.when(movieRepository
                 .findByLocalizedTitleContainingOrOriginalTitleContainingAllIgnoreCase(
-                        "Фильм", "Фильм", Mockito.any(PageRequest.class)))
+                        "Фильм", "Фильм", PageRequest.of(0, 10)))
                 .thenReturn(moviesSlice);
         Mockito.when(movieRepository
-                .findByStorylineContainingIgnoreCase("Story", Mockito.any(PageRequest.class)))
+                .findByStorylineContainingIgnoreCase("Story", PageRequest.of(0, 10)))
                 .thenReturn(moviesSlice);
         Mockito.when(movieRepository
-                .findByGenresId((short)1, Mockito.any(PageRequest.class)))
+                .findByGenresId((short)1, PageRequest.of(0, 10)))
                 .thenReturn(moviesSlice);
         Mockito.when(movieRepository
-                .findByDirectorId(1, Mockito.any(PageRequest.class)))
+                .findByDirectorId(1, PageRequest.of(0, 10)))
                 .thenReturn(moviesSlice);
         Mockito.when(movieRepository
-                .findByScreenwriterId(1, Mockito.any(PageRequest.class)))
+                .findByScreenwriterId(1, PageRequest.of(0, 10)))
                 .thenReturn(moviesSlice);
-        Mockito.when(movieRepository.findByCountriesId((short)1, Mockito.any(PageRequest.class)))
+        Mockito.when(movieRepository.findByCountriesId((short)1, PageRequest.of(0, 10)))
                 .thenReturn(moviesSlice);
-        Mockito.when(movieRepository.findByActorsId(1, Mockito.any(PageRequest.class)))
+        Mockito.when(movieRepository.findByActorsId(1, PageRequest.of(0, 10)))
                 .thenReturn(moviesSlice);
         Mockito.when(movieRepository.save(Mockito.any(Movie.class)))
                 .thenReturn(movies.get(0));
@@ -134,6 +135,10 @@ public class ServiceTest {
         user.setId((short)12);
         Mockito.when(userRepository.findByName("Jack"))
                 .thenReturn(user);
+        Mockito.when(userRepository.findByName("Alice"))
+                .thenReturn(null);
+        Mockito.when(userRepository.findById((short)12))
+                .thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(Mockito.any(User.class)))
                 .thenReturn(user);
 
@@ -163,7 +168,8 @@ public class ServiceTest {
     @Test
     public void testGetTenMoviesPaged(){
         final BoolW hasNext = new BoolW(false);
-        final List<MovieDomain> movies = movieService.getAllMovies(0, hasNext);
+        final List<MovieDomain> movies = movieService.getMovies(
+                GetOptions.GetAll, new Object(), 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
@@ -188,7 +194,7 @@ public class ServiceTest {
     public void testGetMovieListByTitleContains(){
         final BoolW hasNext = new BoolW(false);
         final List<MovieDomain> movies = movieService
-                .getMovieListByTitleContains("Фильм", 0, hasNext);
+                .getMovies(GetOptions.GetByTitle, "Фильм", 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
@@ -200,7 +206,7 @@ public class ServiceTest {
     public void testGetMovieListByStorylineContains(){
         final BoolW hasNext = new BoolW(false);
         final List<MovieDomain> movies = movieService
-                .getMovieListByStorylineContains("Story", 0, hasNext);
+                .getMovies(GetOptions.GetByStoryline,"Story", 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
@@ -212,7 +218,7 @@ public class ServiceTest {
     public void testGetMovieListByGenreId(){
         final BoolW hasNext = new BoolW(false);
         final List<MovieDomain> movies = movieService
-                .getMovieListByGenreId((short)1, 0, hasNext);
+                .getMovies(GetOptions.GetByGenre, (short)1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
@@ -224,7 +230,7 @@ public class ServiceTest {
     public void testGetMovieListByDirectorId(){
         final BoolW hasNext = new BoolW(false);
         final List<MovieDomain> movies = movieService
-                .getMovieListByDirectorId(1, 0, hasNext);
+                .getMovies(GetOptions.GetByDirector, 1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
@@ -248,7 +254,7 @@ public class ServiceTest {
     public void testGetMovieListByCountryId(){
         final BoolW hasNext = new BoolW(false);
         final List<MovieDomain> movies = movieService
-                .getMovieListByCountryId((short)1, 0, hasNext);
+                .getMovies(GetOptions.GetByCountry, (short)1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
@@ -260,7 +266,7 @@ public class ServiceTest {
     public void testGetMovieListByActorId(){
         final BoolW hasNext = new BoolW(false);
         final List<MovieDomain> movies = movieService
-                .getMovieListByActorId(1, 0, hasNext);
+                .getMovies(GetOptions.GetByActor, 1, 0, hasNext);
 
         assertNotNull(movies);
         assertEquals(2, movies.size());
@@ -281,7 +287,7 @@ public class ServiceTest {
     @Test
     public void testCreateUser(){
         final UserDomain user = movieService
-                .createUser("Jack", RoleType.ROLE_USER);
+                .createUser("Alice", RoleType.ROLE_USER);
 
         assertNotNull(user);
         assertEquals("Jack", user.getName());

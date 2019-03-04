@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
@@ -21,14 +20,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -36,7 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable() // CSRF is handled by Vaadin: https://vaadin.com/framework/security
                 .exceptionHandling().accessDeniedPage("/accessDenied")
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-                .and().logout().logoutSuccessUrl("/login/logout")
+                .and()
+                .logout().logoutSuccessUrl("/login/logout")
                 .and()
                 .authorizeRequests()
                 // allow Vaadin URLs and the login URL without authentication

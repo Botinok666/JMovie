@@ -1,5 +1,6 @@
 package com.sfedu.JMovie.api.util;
 
+import com.sfedu.JMovie.JMovieApplication;
 import com.sfedu.JMovie.api.data.CountryData;
 import com.sfedu.JMovie.api.data.GenreData;
 import com.sfedu.JMovie.api.data.MovieData;
@@ -7,14 +8,19 @@ import com.sfedu.JMovie.api.data.PersonData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.file.*;
 import java.util.Optional;
 
 public final class KinoPoiskParser {
+    private static final Logger log = LoggerFactory.getLogger(JMovieApplication.class);
     private KinoPoiskParser(){}
     private enum stateEnum{
         ID, Poster, Localized, Original, Year, Country, TagLine, Director,
@@ -123,6 +129,20 @@ public final class KinoPoiskParser {
                     .child(1)
                     .text()
                     .split(" ", 3)[1]));
+            //Сохраним постер, если это ещё не сделано
+            Path fName = Paths.get("")
+                    .toAbsolutePath()
+                    .resolve("src/main/webapp/frontend/images" +
+                        movie.getPosterLink().substring(
+                                movie.getPosterLink().lastIndexOf('/'))
+                    );
+            if (!(new File(fName.toString()).exists())) {
+                try (InputStream in = new URL(movie.getPosterLink()).openStream()){
+                    Files.copy(in, fName);
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
             return movie;
         } catch (Exception e) {
             throw new NoSuchFieldException("Error occurred when parsing " + state.toString());

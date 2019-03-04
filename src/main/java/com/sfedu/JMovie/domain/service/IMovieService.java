@@ -3,6 +3,7 @@ package com.sfedu.JMovie.domain.service;
 import com.sfedu.JMovie.api.data.MovieData;
 import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.domain.BoolW;
+import com.sfedu.JMovie.domain.GetOptions;
 import com.sfedu.JMovie.domain.model.*;
 
 import java.time.LocalDate;
@@ -23,12 +24,15 @@ public interface IMovieService {
     List<CountryDomain> getAllCountries();
 
     /**
-     * Получить все фильмы
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
+     * Получить список фильмов
+     * @param option Опция для осуществления выборки
+     * @param param Параметр для выборки
+     * @param page Номер страницы
+     * @param hasNext Возвращает, если ли ещё страницы
+     * @return Список фильмов, от 0 до 10
      */
-    List<MovieDomain> getAllMovies(int page, BoolW hasNext);
+    List<MovieDomain> getMovies(GetOptions option,
+                                Object param, int page, BoolW hasNext);
 
     /**
      * Получить фильм по его ID
@@ -51,79 +55,6 @@ public interface IMovieService {
      * @throws NoSuchElementException Если фильма нет в БД
      */
     void addMissingListsToMovie(MovieData movieData) throws NoSuchElementException;
-
-    /**
-     * Получить список фильмов, просмотренных определённым пользователем
-     * @param id ID пользователя
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByUserId(Short id, int page, BoolW hasNext);
-
-    /**
-     * Получить список фильмов, одно из названий которых содержит заданную строку
-     * @param title Строка, которая должна входить в одно из названий
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByTitleContains(String title, int page, BoolW hasNext);
-
-    /**
-     * Получить список фильмов, в описании сюжета которых содержится заданная строка
-     * @param story Строка, которая должна входить в описание сюжета
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByStorylineContains(String story, int page, BoolW hasNext);
-
-    /**
-     * Получить список фильмов заданного жанра
-     * @param id ID жанра
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByGenreId(Short id, int page, BoolW hasNext);
-
-    /**
-     * Получить список фильмов от определённого режиссёра
-     * @param id ID режиссёра
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByDirectorId(Integer id, int page, BoolW hasNext);
-
-    /**
-     * Получить список фильмов, которые снимались в заданной стране
-     * @param id ID страны
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByCountryId(Short id, int page, BoolW hasNext);
-
-    /**
-     * Получить список фильмов, в которых снимался определённый актёр
-     * @param id ID актёра
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByActorId(Integer id, int page, BoolW hasNext);
-
-    /**
-     * Получить список фильмов, вышедших в заданный промежуток времени
-     * @param start Начало промежутка (год)
-     * @param end Конец промежутка (год)
-     * @param page Номер страницы (размер страницы 10)
-     * @param hasNext Возращает флаг "есть ли следующая страница"
-     * @return Список фильмов (10 или менее)
-     */
-    List<MovieDomain> getMovieListByYearPeriod(Short start, Short end, int page, BoolW hasNext);
 
     /**
      * Получить список из 10 людей, в имени/фамилии которых содержится заданная строка

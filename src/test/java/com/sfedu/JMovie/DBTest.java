@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@ActiveProfiles("test")
 public class DBTest {
     private CountryRepository countryRepository;
     private GenreRepository genreRepository;
@@ -26,8 +27,6 @@ public class DBTest {
     private ViewingRepository viewingRepository;
     private MovieRepository movieRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     @Autowired
     public void setCountryRepository(CountryRepository countryRepository){
         this.countryRepository = countryRepository;
@@ -52,7 +51,6 @@ public class DBTest {
     public void setMovieRepository(MovieRepository movieRepository){
         this.movieRepository = movieRepository;
     }
-
 
     //Сохранение одного жанра
     @Test

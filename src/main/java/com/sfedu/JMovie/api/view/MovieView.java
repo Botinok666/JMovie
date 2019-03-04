@@ -18,8 +18,11 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 import javafx.util.Pair;
 
+import java.io.*;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -126,8 +129,31 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
                     return horizontalLayout;
                 })
                 .forEach(layout::add);
+        //Сначала попробуем загрузить сохранённый постер
+        final String pName = movie.getPosterLink().substring(
+                movie.getPosterLink().lastIndexOf('/'));
+        final Path fName = Paths.get("")
+                .toAbsolutePath()
+                .resolve("src/main/webapp/frontend/images" + pName
+                );
+        final Image poster;
+        if (new File(fName.toString()).exists()) {
+            poster = new Image("frontend/images" + pName,
+                    "There should be a local poster");
+        } else {
+            poster = new Image(movie.getPosterLink(), "There should be a poster");
+        }
+//        try {
+//            FileInputStream inputStream = new FileInputStream(fName.toString());
+//            StreamResource fileResource = new StreamResource(
+//                pName, () -> inputStream);
+//            poster = new Image(fileResource, "There should be a local poster");
+//        } catch (FileNotFoundException e) {
+//            //Если его нет, загрузим из интернета
+//            poster = new Image(movie.getPosterLink(), "There should be a poster");
+//        }
+
         //Для картинки нужен отдельный контейнер, чтобы она не растягивалась
-        final Image poster = new Image(movie.getPosterLink(), "There should be a poster");
         final VerticalLayout posterBox = new VerticalLayout(poster);
         posterBox.setPadding(false);
         posterBox.setWidth("360px");

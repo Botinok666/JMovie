@@ -5,15 +5,16 @@ import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
 import com.sfedu.JMovie.domain.BoolW;
+import com.sfedu.JMovie.domain.GetOptions;
+import com.sfedu.JMovie.domain.command.*;
 import com.sfedu.JMovie.domain.model.*;
 import com.sfedu.JMovie.domain.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -27,6 +28,9 @@ public class MovieService implements IMovieService {
     private ViewingRepository viewingRepository;
     private MovieRepository movieRepository;
 
+    private EnumMap<GetOptions, GetMovies> moviesEnumMap =
+            new EnumMap<>(GetOptions.class);
+
     @Override
     public List<GenreDomain> getAllGenres(){
         return GenreConverter.convertToGenreDomainList(
@@ -38,12 +42,31 @@ public class MovieService implements IMovieService {
                 countryRepository.findAll());
     }
     @Override
-    public List<MovieDomain> getAllMovies(int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findAll(PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
+    public List<MovieDomain> getMovies(GetOptions option,
+                                       Object param, int page, BoolW hasNext) {
+        if (moviesEnumMap.isEmpty()) {
+            moviesEnumMap.put(GetOptions.GetAll,
+                    new MoviesAll(movieRepository));
+            moviesEnumMap.put(GetOptions.GetByActor,
+                    new MoviesByActor(movieRepository));
+            moviesEnumMap.put(GetOptions.GetByCountry,
+                    new MoviesByCountry(movieRepository));
+            moviesEnumMap.put(GetOptions.GetByDirector,
+                    new MoviesByDirector(movieRepository));
+            moviesEnumMap.put(GetOptions.GetByGenre,
+                    new MoviesByGenre(movieRepository));
+            moviesEnumMap.put(GetOptions.GetByStoryline,
+                    new MoviesByStoryline(movieRepository));
+            moviesEnumMap.put(GetOptions.GetByTitle,
+                    new MoviesByTitle(movieRepository));
+            moviesEnumMap.put(GetOptions.GetByUser,
+                    new MoviesByUser(viewingRepository));
+            moviesEnumMap.put(GetOptions.GetByYearPeriod,
+                    new MoviesByYearPeriod(movieRepository));
+        }
+        return moviesEnumMap.get(option).get(param, page, hasNext);
     }
+
     @Override
     public boolean isMovieExists(Integer id){
         return movieRepository.existsById(id);
@@ -55,26 +78,7 @@ public class MovieService implements IMovieService {
                 .findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No such movie")));
     }
-    @Override
-    public List<MovieDomain> getMovieListByUserId(Short id, int page, BoolW hasNext) {
-        Slice<Viewing> viewings = viewingRepository
-                .findByUserId(id, PageRequest.of(page, 10));
-        hasNext.setValue(viewings.hasNext());
-        return MovieConverter.convertToMovieDomainList(viewings
-                .stream()
-                .map(Viewing::getMovie)
-                .collect(Collectors.toList())
-        );
-    }
-    @Override
-    public List<MovieDomain> getMovieListByTitleContains(
-            String title, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByLocalizedTitleContainingOrOriginalTitleContainingAllIgnoreCase(
-                        title, title, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
-    }
+
     @Override
     @Transactional(readOnly = true)
     public void addMissingListsToMovie(MovieData movieData)
@@ -97,54 +101,6 @@ public class MovieService implements IMovieService {
                 .map(actor -> PersonConverter.convertToPersonDTO(
                         PersonConverter.convertToPersonDomain(actor)))
                 .forEach(movieData::addActor);
-    }
-    @Override
-    public List<MovieDomain> getMovieListByStorylineContains(
-            String story, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByStorylineContainingIgnoreCase(story, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
-    }
-    @Override
-    public List<MovieDomain> getMovieListByGenreId(
-            Short id, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByGenresId(id, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
-    }
-    @Override
-    public List<MovieDomain> getMovieListByDirectorId(
-            Integer id, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByDirectorId(id, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
-    }
-    @Override
-    public List<MovieDomain> getMovieListByCountryId(
-            Short id, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByCountriesId(id, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
-    }
-    @Override
-    public List<MovieDomain> getMovieListByActorId(
-            Integer id, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByActorsId(id, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
-    }
-    @Override
-    public List<MovieDomain> getMovieListByYearPeriod(
-            Short start, Short end, int page, BoolW hasNext){
-        Slice<Movie> result = movieRepository
-                .findByYearBetween(start, end, PageRequest.of(page, 10));
-        hasNext.setValue(result.hasNext());
-        return MovieConverter.convertToMovieDomainList(result.getContent());
     }
     @Override
     public List<PersonDomain> getPersonListByNameContains(String name){

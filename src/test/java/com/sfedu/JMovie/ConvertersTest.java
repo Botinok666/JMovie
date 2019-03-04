@@ -283,6 +283,10 @@ public class ConvertersTest {
                         "http://imdb.com/2.jpg", (short)2009,
                         "Tag2", (short)140, "Storyline2",
                         8.9f, 8.879f));
+        final Person director = new Person(12, "Bradley Cooper");
+        final Person screenwriter = new Person(12, "Bradley Cooper");
+        entities.forEach(movie -> movie.setDirector(director));
+        entities.forEach(movie -> movie.setScreenwriter(screenwriter));
         final List<MovieDomain> domains =
                 MovieConverter.convertToMovieDomainList(entities);
         //Проверим объекты domain
