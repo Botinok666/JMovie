@@ -86,13 +86,14 @@ public final class KinoPoiskParser {
                     .child(1)
                     .text());
             state = stateEnum.Director;
-            movie.setDirector(convertToPerson(element
-                    .child(3)
-                    .selectFirst("a")));
+            movie.setDirector(Optional.ofNullable(element.child(3).selectFirst("a"))
+                    .map(KinoPoiskParser::convertToPerson)
+                    .orElse(new PersonData(0, "-")));
             state = stateEnum.Screenwriter;
-            movie.setScreenwriter(convertToPerson(element
-                    .child(4)
-                    .selectFirst("a")));
+            movie.setScreenwriter(Optional.ofNullable(element.child(4).selectFirst("a"))
+                    .map(KinoPoiskParser::convertToPerson)
+                    .orElse(new PersonData(0, "-")));
+            state = stateEnum.Screenwriter;
             state = stateEnum.Genre;
             Optional.ofNullable(element.selectFirst("span[itemprop=\"genre\"]"))
                     .ifPresent(e -> e
@@ -125,10 +126,16 @@ public final class KinoPoiskParser {
                             .setRatingKP(Float.parseFloat(e.text()))
                     );
             state = stateEnum.RatingIMDB;
-            movie.setRatingIMDB(Float.parseFloat(element
-                    .child(1)
-                    .text()
-                    .split(" ", 3)[1]));
+            float imdb;
+            try {
+                imdb = Float.parseFloat(element
+                        .child(1)
+                        .text()
+                        .split(" ", 3)[1]);
+            } catch (NumberFormatException e) {
+                imdb = 0;
+            }
+            movie.setRatingIMDB(imdb);
             //Сохраним постер, если это ещё не сделано
             Path fName = Paths.get("")
                     .toAbsolutePath()
