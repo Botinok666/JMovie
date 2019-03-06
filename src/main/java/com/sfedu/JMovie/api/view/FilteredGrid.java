@@ -22,7 +22,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -53,10 +52,11 @@ public class FilteredGrid extends VerticalLayout {
 
     private void yearsSet(){
         try {
-            Pair<Short, Short> period = new Pair<>(
+            List<Short> period = Arrays.asList(
                     Short.parseShort(byYearStarts.getValue()),
-                    Short.parseShort(byYearEnds.getValue()));
-            if (period.getKey() < period.getValue())
+                    Short.parseShort(byYearEnds.getValue())
+            );
+            if (period.get(0) < period.get(1))
                 param = period;
         } catch (Exception e) {
             param = null;

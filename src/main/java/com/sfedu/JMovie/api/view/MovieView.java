@@ -16,7 +16,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
-import javafx.util.Pair;
 
 import java.io.*;
 import java.net.SocketTimeoutException;
@@ -26,6 +25,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -72,29 +72,29 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
         if (!isNew)
             service.addMissingListsToMovie(movie);
         //Массив для представления всех характеристик фильма
-        final List<Pair<String, String>> movieData = new ArrayList<>();
-        movieData.add(new Pair<>("Год:", String.valueOf(movie.getYear())));
-        movieData.add(new Pair<>("Страна:", movie.getCountries()
+        final List<List<String>> movieData = new ArrayList<>();
+        movieData.add(Arrays.asList("Год:", String.valueOf(movie.getYear())));
+        movieData.add(Arrays.asList("Страна:", movie.getCountries()
                         .stream()
                         .map(CountryData::getName)
                         .collect(Collectors.joining(", "))));
-        movieData.add(new Pair<>("Режиссёр:", movie.getDirector().getName()));
-        movieData.add(new Pair<>("Сценарий:", movie.getScreenwriter().getName()));
-        movieData.add(new Pair<>("Слоган:", movie.getTagLine()));
-        movieData.add(new Pair<>("Жанр:", movie.getGenres()
+        movieData.add(Arrays.asList("Режиссёр:", movie.getDirector().getName()));
+        movieData.add(Arrays.asList("Сценарий:", movie.getScreenwriter().getName()));
+        movieData.add(Arrays.asList("Слоган:", movie.getTagLine()));
+        movieData.add(Arrays.asList("Жанр:", movie.getGenres()
                         .stream()
                         .map(GenreData::getName)
                         .collect(Collectors.joining(", "))));
-        movieData.add(new Pair<>("Продолжительность:", LocalTime.MIN
+        movieData.add(Arrays.asList("Продолжительность:", LocalTime.MIN
                         .plusMinutes(movie.getRuntime())
                         .toString()));
-        movieData.add(new Pair<>("В главных ролях:", movie.getActors()
+        movieData.add(Arrays.asList("В главных ролях:", movie.getActors()
                         .stream()
                         .map(PersonData::getName)
                         .collect(Collectors.joining(", "))));
-        movieData.add(new Pair<>("Сюжет:", movie.getStoryline()));
-        movieData.add(new Pair<>("Рейтинг KP:", String.valueOf(movie.getRatingKP())));
-        movieData.add(new Pair<>("Рейтинг IMDB:", String.valueOf(movie.getRatingIMDB())));
+        movieData.add(Arrays.asList("Сюжет:", movie.getStoryline()));
+        movieData.add(Arrays.asList("Рейтинг KP:", String.valueOf(movie.getRatingKP())));
+        movieData.add(Arrays.asList("Рейтинг IMDB:", String.valueOf(movie.getRatingIMDB())));
         //Добавим данные о просмотрах, если они были
         if (!isNew && SecurityContextUtils.getUser() != null) {
             final List<ViewingData> viewings = ViewingConverter.convertToViewingListDTO(
@@ -102,7 +102,7 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
                             movieId, SecurityContextUtils.getUser().getId())
             );
             if (viewings.size() > 0)
-                movieData.add(new Pair<>("Просмотры: ", viewings
+                movieData.add(Arrays.asList("Просмотры: ", viewings
                         .stream()
                         .map(viewingData -> String.format("%s (%.1f)",
                                 viewingData.getDate().toString(), viewingData.getRatingUser()))
@@ -117,10 +117,10 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
         //Тогда характеристики будут представлены в виде двух столбцов
         movieData.stream()
                 .map(p -> {
-                    Label left = new Label(p.getKey());
+                    Label left = new Label(p.get(0));
                     left.setWidth("25%");
                     left.getStyle().set("text-align", "right");
-                    Label right = new Label(p.getValue());
+                    Label right = new Label(p.get(1));
                     right.setWidth("75%");
                     right.getStyle().set("white-space", "normal");
                     HorizontalLayout horizontalLayout = new HorizontalLayout(left, right);
