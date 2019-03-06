@@ -4,6 +4,8 @@ import com.sfedu.JMovie.api.data.CountryData;
 import com.sfedu.JMovie.api.data.GenreData;
 import com.sfedu.JMovie.api.data.MovieData;
 import com.sfedu.JMovie.api.data.PersonData;
+import com.sfedu.JMovie.api.security.SecurityContextUtils;
+import com.sfedu.JMovie.db.entity.User;
 import com.sfedu.JMovie.domain.BoolW;
 import com.sfedu.JMovie.domain.GetOptions;
 import com.sfedu.JMovie.domain.service.IMovieService;
@@ -159,6 +161,11 @@ public class FilteredGrid extends VerticalLayout {
                 case GetByStoryline:
                     byText.setLabel("Сюжет");
                     byText.setVisible(true);
+                    break;
+                case GetByUser:
+                    param = Optional.ofNullable(SecurityContextUtils.getUser())
+                            .map(User::getId)
+                            .orElse(null);
                     break;
             }
             search.setEnabled(true);

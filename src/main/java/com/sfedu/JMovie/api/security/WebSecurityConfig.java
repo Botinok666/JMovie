@@ -41,8 +41,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .regexMatchers("/frontend/.*", "/VAADIN/.*", "/login.*", "/accessDenied").permitAll()
                 .regexMatchers(HttpMethod.POST, "/\\?v-r=.*").permitAll()
                 // deny any other URL until authenticated
-                .antMatchers("/**").fullyAuthenticated()
+                .antMatchers("/**", "/h2/**").fullyAuthenticated()
         ;
+        http.headers().frameOptions().sameOrigin();
     }
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)

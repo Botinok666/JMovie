@@ -40,6 +40,11 @@ public class JMovieApplication {
 	public CommandLineRunner createData(IMovieService service){
 		return (args) -> {
 		    //Создадим одного пользователя - админа
+            if (service.getAllCountries().size() > 0){
+                log.info("Database already filled");
+                return;
+            }
+
 		    UserData user = UserConverter.convertToUserDTO(
 		            service.createUser("admin", RoleType.ROLE_ADMIN));
 		    service.updateUserPwd(user.getId(), passwordEncoder().encode("pass"));
