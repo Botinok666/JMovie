@@ -6,13 +6,16 @@ import com.sfedu.JMovie.db.entity.*;
 import com.sfedu.JMovie.db.repository.*;
 import com.sfedu.JMovie.domain.BoolW;
 import com.sfedu.JMovie.domain.GetOptions;
+import com.sfedu.JMovie.domain.OffsetLimitPageable;
 import com.sfedu.JMovie.domain.command.*;
 import com.sfedu.JMovie.domain.model.*;
 import com.sfedu.JMovie.domain.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.List;
@@ -103,9 +106,15 @@ public class MovieService implements IMovieService {
                 .forEach(movieData::addActor);
     }
     @Override
-    public List<PersonDomain> getPersonListByNameContains(String name){
+    public List<PersonDomain> getPersonListByNameContains(
+            String name, int offset, int limit){
         return PersonConverter.convertToPersonDomainList(
-                personRepository.findTop10ByNameContainingIgnoreCase(name));
+                personRepository.findByNameContainingIgnoreCase(
+                        name, new OffsetLimitPageable(offset, limit)));
+    }
+    @Override
+    public int getPersonCountByNameContains(String name){
+        return personRepository.countByNameContainingIgnoreCase(name);
     }
     @Override
     public UserDomain createUser(String name, RoleType role) throws IllegalArgumentException{

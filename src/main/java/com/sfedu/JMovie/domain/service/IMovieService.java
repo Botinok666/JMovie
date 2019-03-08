@@ -61,8 +61,8 @@ public interface IMovieService {
      * @param name Строка, которая должна входить в имя/фамилию
      * @return Первые 10 людей, соответствующих критерию
      */
-    List<PersonDomain> getPersonListByNameContains(String name);
-
+    List<PersonDomain> getPersonListByNameContains(String name, int offset, int limit);
+    int getPersonCountByNameContains(String name);
     /**
      * Создать пользователя с заданным логином и пустым паролем
      * @param name Логин
