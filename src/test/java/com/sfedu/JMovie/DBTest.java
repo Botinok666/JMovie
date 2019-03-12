@@ -104,7 +104,7 @@ public class DBTest {
         assertEquals(id, selected.getId());
         assertEquals(name, selected.getName());
         assertEquals(1, personRepository
-                .findTop10ByNameContainingIgnoreCase("tes").size());
+                .findByNameContainingIgnoreCase("tes", PageRequest.of(0, 10)).size());
     }
     //Сохранение одного пользователя, затем обновление его данных
     @Test

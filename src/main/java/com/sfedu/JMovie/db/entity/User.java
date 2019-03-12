@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "Users")
 public class User {
     @Id
     @GeneratedValue

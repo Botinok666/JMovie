@@ -45,6 +45,14 @@ public class MovieService implements IMovieService {
                 countryRepository.findAll());
     }
     @Override
+    public long getMoviesCount(){
+        return movieRepository.count();
+    }
+    @Override
+    public int getViewsCount(Short user_id){
+        return viewingRepository.countByUserId(user_id);
+    }
+    @Override
     public List<MovieDomain> getMovies(GetOptions option,
                                        Object param, int page, BoolW hasNext) {
         if (moviesEnumMap.isEmpty()) {

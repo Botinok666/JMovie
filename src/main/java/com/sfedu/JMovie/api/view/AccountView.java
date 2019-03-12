@@ -5,6 +5,7 @@ import com.sfedu.JMovie.db.RoleType;
 import com.sfedu.JMovie.domain.model.UserDomain;
 import com.sfedu.JMovie.domain.service.IMovieService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -24,6 +25,10 @@ public class AccountView extends VerticalLayout
         add(new RouterLink("Back to main view", MainView.class));
         if (SecurityContextUtils.getUser() == null)
             return;
+        Label statsMovie = new Label(String.format("Фильмов в БД: %d", service.getMoviesCount()));
+        Label statsView = new Label(String.format("Просмотров: %d", service.getViewsCount(
+                SecurityContextUtils.getUser().getId())));
+
         PasswordField newPass = new PasswordField("Новый пароль");
         PasswordField passRepeat = new PasswordField("Повторите новый пароль");
         Button change = new Button("Сменить пароль");
@@ -76,6 +81,7 @@ public class AccountView extends VerticalLayout
                     ui.navigate("login/logout");// to redirect user to the login page
                 }));
         add(logout);
+        add(statsMovie, statsView);
     }
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {

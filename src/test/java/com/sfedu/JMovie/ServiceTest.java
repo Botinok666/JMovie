@@ -60,7 +60,7 @@ public class ServiceTest {
         final List<Person> actors = Arrays.asList(
                 new Person(14, "Hillary Swank"),
                 new Person(67, "Michael Shannon"));
-        Mockito.when(personRepository.findTop10ByNameContainingIgnoreCase("Name"))
+        Mockito.when(personRepository.findByNameContainingIgnoreCase("Name", PageRequest.of(0, 10)))
                 .thenReturn(actors);
         Mockito.when(personRepository.saveAll(Mockito.anyList()))
                 .thenReturn(actors);
@@ -277,7 +277,7 @@ public class ServiceTest {
     @Test
     public void testGetPersonListByNameContains(){
         final List<PersonDomain> people = movieService
-                .getPersonListByNameContains("Name");
+                .getPersonListByNameContains("Name", 0, 10);
 
         assertNotNull(people);
         assertEquals(2, people.size());

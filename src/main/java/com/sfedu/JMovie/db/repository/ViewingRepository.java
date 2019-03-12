@@ -12,4 +12,5 @@ import java.util.List;
 public interface ViewingRepository extends JpaRepository<Viewing, Integer> {
     List<Viewing> findByMovieIdAndUserId(Integer movieId, Short userId);
     Slice<Viewing> findByUserId(Short id, Pageable pageable);
+    int countByUserId(Short id);
 }

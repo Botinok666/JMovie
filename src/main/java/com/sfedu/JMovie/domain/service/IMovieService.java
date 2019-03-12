@@ -23,6 +23,9 @@ public interface IMovieService {
      */
     List<CountryDomain> getAllCountries();
 
+    long getMoviesCount();
+    int getViewsCount(Short user_id);
+
     /**
      * Получить список фильмов
      * @param option Опция для осуществления выборки

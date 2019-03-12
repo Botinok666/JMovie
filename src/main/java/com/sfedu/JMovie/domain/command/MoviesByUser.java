@@ -7,6 +7,7 @@ import com.sfedu.JMovie.domain.model.MovieDomain;
 import com.sfedu.JMovie.domain.util.MovieConverter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ public class MoviesByUser extends GetMovies {
             return Collections.emptyList();
         }
         Slice<Viewing> viewings = viewingRepository
-            .findByUserId((Short)param, PageRequest.of(page, 10));
+            .findByUserId((Short)param, PageRequest.of(page, 10, Sort.by("date").descending()));
         hasNext.setValue(viewings.hasNext());
         return MovieConverter.convertToMovieDomainList(viewings
                 .stream()

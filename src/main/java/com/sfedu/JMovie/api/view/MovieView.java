@@ -15,6 +15,8 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.*;
 
 import java.io.*;
@@ -24,42 +26,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Route
 public class MovieView extends VerticalLayout implements HasUrlParameter<String> {
     private Integer movieId;
     private IMovieService service;
+    private MovieData movie;
 
     public MovieView(IMovieService service){
         this.service = service;
     }
 
-    private void fill(){
-        final MovieData movie;
-        boolean isNew = false;
-        //Если фильм есть в БД, берём оттуда
-        if (service.isMovieExists(movieId)) {
-            movie = MovieConverter.convertToMovieDTO(service.getMovieById(movieId));
-        } else {
-            //Иначе пытаемся получить данные из интернета
-            try {
-                movie = KinoPoiskParser.parseURL(
-                        new URL("https://www.kinopoisk.ru/film/" + movieId));
-                isNew = true;
-            }
-            catch (SocketTimeoutException e1){
-                add(new Label("Превышено время ожидания от kinopoisk.ru"));
-                return;
-            } catch (Exception ex) {
-                add(new Label(ex.getMessage()));
-                return;
-            }
-        }
+    private void fill(boolean isNew){
         //Название, если есть только в одном варианте, выводится без слэша
         final Label movieTitle = new Label(
                 movie.getLocalizedTitle().isEmpty() || movie.getOriginalTitle().isEmpty() ?
@@ -143,15 +123,6 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
         } else {
             poster = new Image(movie.getPosterLink(), "There should be a poster");
         }
-//        try {
-//            FileInputStream inputStream = new FileInputStream(fName.toString());
-//            StreamResource fileResource = new StreamResource(
-//                pName, () -> inputStream);
-//            poster = new Image(fileResource, "There should be a local poster");
-//        } catch (FileNotFoundException e) {
-//            //Если его нет, загрузим из интернета
-//            poster = new Image(movie.getPosterLink(), "There should be a poster");
-//        }
 
         //Для картинки нужен отдельный контейнер, чтобы она не растягивалась
         final VerticalLayout posterBox = new VerticalLayout(poster);
@@ -168,7 +139,7 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
         //Поле для ввода пользовательского рейтинга
         final TextField rating = new TextField("Рейтинг");
         rating.setVisible(!isNew);
-        rating.setValue("5.0");
+        rating.setValue(String.format(Locale.US, "%.1f", movie.getRatingIMDB()));
         final Button addViewing = new Button("Добавить просмотр", VaadinIcon.PLUS.create());
         addViewing.setVisible(!isNew);
         addViewing.addClickListener(event ->
@@ -212,6 +183,7 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
            if (data.getId().equals(movieId)) {
                save.setVisible(false);
                datePicker.setVisible(true);
+               rating.setVisible(true);
                addViewing.setVisible(true);
                Notification.show("Фильм сохранён",
                        2000, Notification.Position.BOTTOM_START);
@@ -238,7 +210,46 @@ public class MovieView extends VerticalLayout implements HasUrlParameter<String>
                 add(new Label("Wrong parameter specified"));
                 return;
             }
+        }        boolean fromFile = false;
+        //Если фильм есть в БД, берём оттуда
+        if (service.isMovieExists(movieId)) {
+            movie = MovieConverter.convertToMovieDTO(service.getMovieById(movieId));
+            fill(false);
+        } else {
+            //Иначе пытаемся получить данные из интернета
+            try {
+                movie = KinoPoiskParser.parseURL(
+                        new URL("https://www.kinopoisk.ru/film/" + movieId));
+                fill(true);
+            }
+            catch (SocketTimeoutException e1){
+                add(new Label("Превышено время ожидания от kinopoisk.ru"));
+                return;
+            } catch (Exception ex) {
+                if (!ex.getMessage().contains("ID")) {
+                    add(new Label(ex.getMessage()));
+                    return;
+                }
+                fromFile = true;
+            }
         }
-        fill();
+        if (fromFile) {
+            Label tryUpload = new Label("Не удаётся загрузить страницу. Попробуйте сохранить " +
+                    "её в HTML и загрузить файл в поле:");
+            MemoryBuffer buffer = new MemoryBuffer();
+            Upload fileUp = new Upload(buffer);
+            fileUp.setAcceptedFileTypes("text/html");
+            fileUp.addSucceededListener(event1 -> {
+                try {
+                    movie = KinoPoiskParser.parseStream(buffer.getInputStream());
+                    tryUpload.setVisible(false);
+                    fileUp.setVisible(false);
+                    fill(true);
+                } catch (NoSuchFieldException e) {
+                    add(new Label(e.getMessage()));
+                }
+            });
+            add(tryUpload, fileUp);
+        }
     }
 }
